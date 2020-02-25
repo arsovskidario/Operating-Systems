@@ -1,0 +1,8 @@
+find dest -ctime -60 # change time 60min
+  	   -atime # access time
+	   -mtime # modified time
+ln src dest # src file you want to link to dest = destination of shortcut
+
+touch - creates regular file
+find ./ -type f  # show only regular files in specified directory
+# next exercise 5501 
