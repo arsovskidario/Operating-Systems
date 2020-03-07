@@ -1,0 +1,34 @@
+[] -> set that can contain characters
+[a-z] means any lower character , [2-5] contains any number from 2 to 5
+[Dy] word contains D or y in it 
+^[1] word contains 1 in the begining of the line
+[ski]$ word ends with the string ski 
+
+
+AWK 
+-By default the delimetar is ' '(whitespace) 
+
+ex. 
+ awk ' {print $1} ' file.txt 
+	=> this will print the first column that is separeted by the delimetar
+ awk '{print $1,$2}' file.txt
+	=>take first and second colomn 
+ awk '{print $1.$2}' file.txt
+	=> take the concatenated result of first and second colomn
+
+ awk 'BEGIN {FS=":"} {print $1,$5}' passwd.txt
+	=> FS is the delimetar, then prnit 1,5 colomn in file
+	FS = File Separator ( one character )
+
+ awk 'BEGIN {    for(i=0;i<2;i++){print "\n"}}
+    	    {print $0}
+     END { for(i=0;i<3;i++){ print "\n"} } ' /etc/passwd
+
+Колко хора не се казват Ivan според /etc/passwd
+
+grep -v -c Ivan /etc/passwd 
+
+awk '!/Ivan/' /etc/passwd | wc -l => raboti zatoj shto matchove se broiv na red
+
+-v e invert na match
+-c e za number of matches
