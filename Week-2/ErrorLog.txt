@@ -1,0 +1,5 @@
+grep: ./Dir2: Is a directory
+grep: ./Dir2: Is a directory
+grep: ./Dir2: Is a directory
+grep: ./Dir2: Is a directory
+grep: ./Dir2: Is a directory
