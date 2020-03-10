@@ -34,7 +34,7 @@ If you delete the original file the soft link won't be deleted.
 Sticky bit = t in the end of the permission means that the file has root access
 
 To be root :
-```console
+```shell
  sudo su root
  
 ```
@@ -84,7 +84,7 @@ tar -czvf arhiva.tr b* # add all files that start with the letter b to the arhiv
    
 
    Some examples of the grep command in use  :
-   ```console
+   ```shell
       grep -P -A 4 "^Jane" data.txt | grep -P "[a-zA-Z0-9\-\_\.]+@[a-zA-Z0-9\_]+.[a-zA-Z0-9]+"
       cat allJaneEmails.txt  | sort | awk 'BEGIN { "print \$1" > "allJaneEmails.txt"}'
       	
