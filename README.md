@@ -49,30 +49,30 @@ Grep
    - work inside of the file 
    - works with regex
    - by default if no file is given, recursively searches threw whole dir
-   -i  makes grep search for case insensitive words
-   -v reverse search 
-   -w select whole word as match ( ex. grep -w "Dario" file => will only search for Dario)
-   -c shows on which line the match appears 
+   - i  makes grep search for case insensitive words
+   - v reverse search 
+   - w select whole word as match ( ex. grep -w "Dario" file => will only search for Dario)
+   - c shows on which line the match appears 
       ex. grep -wirc "Dario" .  -> prints how many matches are there in every file for the word Dario
-   -B <number>  number of lines before match
-   -A <number> number of lines after match
-   -C <number> number of lines before and after the match
+   - B <number>  number of lines before match
+   - A <number> number of lines after match
+   - C <number> number of lines before and after the match
    
    ./* =>search for every dir and file 
    
 
-   -l shows files that contain the match 
+   - l shows files that contain the match 
     
-   -m <number> limits the number of matches that will be found in a given file 
+   - m <number> limits the number of matches that will be found in a given file 
 	ex. if you have x10 Dario users it will return match for only 5 if grep -m 5  "Dario"
    
    
    grep "..."  => . means any character 
    
-   -P means using the Pearl language regex  
+   - P means using the Pearl language regex  
 	ex.   grep -P "/d {3} " -> search for 3 decimals in a row 
 
-   -o shows only the matching words and not the entire line
+   - o shows only the matching words and not the entire line
 
    -r recursively search threw current directory and subdirectories but dont follow symbolic links
     ex. if grep -r "darko" foo  =>and foo is a sym link it will follow it 
