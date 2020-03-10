@@ -44,7 +44,10 @@ find ./ -perm g=w # will only look for files that will have only group write per
 find -anewer file # find files that are newer then give file 
 find -anewer file -exec rm {} \; # remove files that are newer than given file
 tar -czvf arhiva.tr b* # add all files that start with the letter b to the arhiva.tr 
+
 Grep 
+   - work inside of the file 
+   - works with regex
    - by default if no file is given, recursively searches threw whole dir
    -i  makes grep search for case insensitive words
    -v reverse search 

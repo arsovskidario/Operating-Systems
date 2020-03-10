@@ -1,5 +1,3 @@
-All materials for the course Operating Systems 
-
 find dest -ctime -60 # change time 60min
   	   -atime # access time
 	   -mtime # modified time
@@ -46,7 +44,10 @@ find ./ -perm g=w # will only look for files that will have only group write per
 find -anewer file # find files that are newer then give file 
 find -anewer file -exec rm {} \; # remove files that are newer than given file
 tar -czvf arhiva.tr b* # add all files that start with the letter b to the arhiva.tr 
+
 Grep 
+   - work inside of the file 
+   - works with regex
    - by default if no file is given, recursively searches threw whole dir
    -i  makes grep search for case insensitive words
    -v reverse search 
@@ -65,3 +66,15 @@ Grep
    -m <number> limits the number of matches that will be found in a given file 
 	ex. if you have x10 Dario users it will return match for only 5 if grep -m 5  "Dario"
    
+   
+   grep "..."  => . means any character 
+   
+   -P means using the Pearl language regex  
+	ex.   grep -P "/d {3} " -> search for 3 decimals in a row 
+
+   -o shows only the matching words and not the entire line
+
+   -r recursively search threw current directory and subdirectories but dont follow symbolic links
+    ex. if grep -r "darko" foo  =>and foo is a sym link it will follow it 
+
+   -R same as -r but will follow sym links by default 
