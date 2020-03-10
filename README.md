@@ -90,7 +90,17 @@ tar -czvf arhiva.tr b* # add all files that start with the letter b to the arhiv
       	
    ```
 
-   - [ ] implement Find 
-   - [ ] Learn about Binary Files
-   - [ ] Do homework number 3
+   - $? specia symbol that returns the exit code of the last command ( 0 = okay,      1 = minor problem ex. cant acces subdir, 2 = serious trouble ex. command line arguments )
+   - /dev/null special file (null device ) discards everything inputed to it and    return EOF
+
+**TR**
+   - translate or delete characters 
+
+   ```shell 
+	tr a-z A-Z  # will translate every lower case letter to UPPER CASE LETTER
+   ```
+   - -d delete specified character
+   - -s squeeze repeats, basically means removing duplicates of a char in a word 
+        eg. Daario  tr -s 'a' => Output : Dario 
+	*Handy when used for squeezing spaces and tabs in a text*
 
