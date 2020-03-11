@@ -95,12 +95,49 @@ tar -czvf arhiva.tr b* # add all files that start with the letter b to the arhiv
 
 **TR**
    - translate or delete characters 
+   - only works if you pipe or redirect input to it  ( can't specify file as input )
 
    ```shell 
 	tr a-z A-Z  # will translate every lower case letter to UPPER CASE LETTER
    ```
    - -d delete specified character
-   - -s squeeze repeats, basically means removing duplicates of a char in a word 
-        eg. Daario  tr -s 'a' => Output : Dario 
-	*Handy when used for squeezing spaces and tabs in a text*
+   - -s squeeze repeats, basically means removing duplicates of a char in a word
+ 
+	```shell
+        tr -s 'a' # Input:Daario   Output : Dario
+   ```
+ 
+   - *Handy when used for squeezing spaces and tabs in a text*
 
+
+ **Sort**
+   - can use file as input
+   - sorts output lexicographically be default
+   - -k 2 # will sort by 2 column the standard delimetar is space
+   - -r # reverse sort
+   - -n # numberical sort
+   - -t # field separator ( change it if you want for it to be different from psace )
+   ```shell
+         sort -t ':' -nk 3 # sort by USERID numerically 
+   ```  
+
+ **Cut**
+   - 
+
+
+
+ **Tricky Exercises**
+  - Отпечатайте 2 реда над вашия ред в /etc/passwd и 3 реда под него // може да стане и без пайпове
+
+  ```shell
+     awk 'BEGIN {printf "\n\n"} {printf$0;printf"\n"} END{printf "\n\n\n" }' passwd.txt
+  ```
+
+  - Колко хора не се казват Ivan според /etc/passwd
+  ```shell
+     grep -Piwvc "Ivan" passwd.txt # w= only word , v = reversed ,c = match count 
+  ```
+  - Изведете имената на хората с второ име по-дълго от 7 (>7) символа според /etc/passwd
+  ```shell
+     cut -d ":" -f 5 passwd.txt | grep -P " \w{7}" | cut -d " " -f 1 > usernamesGreaterThenSeven.txt
+  ```
