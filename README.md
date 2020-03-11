@@ -36,7 +36,6 @@ Sticky bit = t in the end of the permission means that the file has root access
 To be root :
 ```shell
  sudo su root
- 
 ```
 
 find ./ -group group_name -perm 002 // only write permission
@@ -49,6 +48,7 @@ find -anewer file -exec rm {} \; # remove files that are newer than given file
 tar -czvf arhiva.tr b* # add all files that start with the letter b to the arhiva.tr 
 
 **Grep** 
+   - 
    - work inside of the file 
    - works with regex
    - by default if no file is given, recursively searches threw whole dir
@@ -86,14 +86,14 @@ tar -czvf arhiva.tr b* # add all files that start with the letter b to the arhiv
    Some examples of the grep command in use  :
    ```shell
       grep -P -A 4 "^Jane" data.txt | grep -P "[a-zA-Z0-9\-\_\.]+@[a-zA-Z0-9\_]+.[a-zA-Z0-9]+"
-      cat allJaneEmails.txt  | sort | awk 'BEGIN { "print \$1" > "allJaneEmails.txt"}'
-      	
+      cat allJaneEmails.txt  | sort | awk 'BEGIN { "print \$1" > "allJaneEmails.txt"}' 	
    ```
 
    - $? specia symbol that returns the exit code of the last command ( 0 = okay,      1 = minor problem ex. cant acces subdir, 2 = serious trouble ex. command line arguments )
    - /dev/null special file (null device ) discards everything inputed to it and    return EOF
 
 **TR**
+   - 
    - translate or delete characters 
    - only works if you pipe or redirect input to it  ( can't specify file as input )
 
@@ -104,13 +104,14 @@ tar -czvf arhiva.tr b* # add all files that start with the letter b to the arhiv
    - -s squeeze repeats, basically means removing duplicates of a char in a word
  
 	```shell
-        tr -s 'a' # Input:Daario   Output : Dario
+        tr -s 'a'
    ```
  
    - *Handy when used for squeezing spaces and tabs in a text*
 
 
  **Sort**
+   - 
    - can use file as input
    - sorts output lexicographically be default
    - -k 2 # will sort by 2 column the standard delimetar is space
