@@ -100,16 +100,16 @@ tar -czvf arhiva.tr b* # add all files that start with the letter b to the arhiv
    ```shell 
 	tr a-z A-Z  # will translate every lower case letter to UPPER CASE LETTER
    ```
-   
+
    - -d delete specified character
    - -s squeeze repeats, basically means removing duplicates of a char in a word
 
-    ```shell
       tr -s "a"	
    ```
-   -  HINT: Handy when used for squeezing spaces and tabs in a text
-   - 
    ```
+   - * HINT: Handy when used for squeezing spaces and tabs in a text*
+   - 
+  
 **Sort**
    - 
    - can use file as input
