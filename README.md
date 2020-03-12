@@ -115,10 +115,10 @@ tar -czvf arhiva.tr b* # add all files that start with the letter b to the arhiv
    - 
    - can use file as input
    - sorts output lexicographically be default
-   - -k 2 # will sort by 2 column the standard delimetar is space
-   - -r # reverse sort
-   - -n # numberical sort
-   - -t # field separator ( change it if you want for it to be different from psace )
+   - -k 2  will sort by 2 column the standard delimetar is space
+   - -r  reverse sort
+   - -n  numberical sort
+   - -t  field separator ( change it if you want for it to be different from psace )
    ```shell
          sort -t ':' -nk 3 # sort by USERID numerically 
    ```  
@@ -143,3 +143,35 @@ tar -czvf arhiva.tr b* # add all files that start with the letter b to the arhiv
   ```shell
      cut -d ":" -f 5 passwd.txt | grep -P " \w{7}" | cut -d " " -f 1 > usernamesGreaterThenSeven.txt
   ```
+
+  - Изведете имената на хората с второ име по-късо от 8 (<=7) символа според /etc/passwd // !(>7) = ?
+  ```shell
+     cut -d ":" -f 5 passwd.txt | cut -d " " -f 2 | grep -P "\w{1,7"| tr , " " > surnamesLessThanSeven.txt
+  ```
+
+  - Изведете целите редове от /etc/passwd за хората от 03-a-5003
+  ```shell
+    grep -Pi "[a-zA-Z]*\s+[a-zA-Z]{7}[,\s]" passwd.txt > linesWithGreaterUsername
+  ```
+
+  - Вижте man 5 services. Напишете команда, която ви дава името на протокол с порт естествено число N. Командата да не отпечатва нищо, ако търсения порт не съществува (например при порт 1337). Примерно, ако номера на порта N е 69, командата трябва да отпечати tftp.
+  ```shell
+     cat /etc/services | tr -s '\t' | cut -f 2 | grep -P "\d+/(tcp|udp)" | awk -F '[/]' 'if($1 == 69){printf "tftp\n" } if($1 <= 1024){printf $0; printf "\n" } > servicesResult'
+  ```
+
+  - Колко файлове в /bin са shell script? (Колко файлове в дадена директория са ASCII text?)
+  ```shell
+     find /bin -type f -executable | wc -l  # for scripts
+     find /bin -type f -name "*.txt" | wc -l #for ascii text 
+  ```
+
+   - Направете списък с директориите на вашата файлова система, до които нямате достъп. Понеже файловата система може да е много голяма, търсете до 3 нива на дълбочина. А до кои директории имате достъп? Колко на брой са директориите, до които нямате достъп?
+
+   ```shell
+      find ~ -maxdepth 3 ! -writable > unavailableDir
+      wc -l unavailableDir
+      find ~ -maxdepth 3 -writable # have access to 
+
+   ```
+
+  
