@@ -1,0 +1,4 @@
+find: warning: you have specified the -d option after a non-option argument -print, but options are not positional (-d affects tests specified before it as well as those specified after it).  Please specify options before other arguments.
+
+find: warning: the -d option is deprecated; please use -depth instead, because the latter is a POSIX-compliant feature.
+find: paths must precede expression: `:'

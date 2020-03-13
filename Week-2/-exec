@@ -1,0 +1,2 @@
+find: paths must precede expression: `cut'
+find: possible unquoted pattern after predicate `-print'?

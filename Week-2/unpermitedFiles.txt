@@ -1,0 +1,17 @@
+/lost+found
+/home/lost+found
+/boot/efi
+/root
+/run/wpa_supplicant
+/run/gdm3
+/run/udisks2
+/run/sudo
+/tmp/snap.gnome-calculator
+/tmp/systemd-private-399815d161eb481f82dbdf64a48a4416-ModemManager.service-ywCuux
+/tmp/snap.gnome-system-monitor
+/tmp/snap.spotify
+/tmp/systemd-private-399815d161eb481f82dbdf64a48a4416-colord.service-NWNsrl
+/tmp/systemd-private-399815d161eb481f82dbdf64a48a4416-systemd-resolved.service-N2qTJE
+/tmp/systemd-private-399815d161eb481f82dbdf64a48a4416-rtkit-daemon.service-4hoe2x
+/tmp/systemd-private-399815d161eb481f82dbdf64a48a4416-systemd-timesyncd.service-5iYje5
+/tmp/systemd-private-399815d161eb481f82dbdf64a48a4416-bolt.service-0Ca5QI

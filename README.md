@@ -128,6 +128,25 @@ tar -czvf arhiva.tr b* # add all files that start with the letter b to the arhiv
 
 
 
+ **Redirection**
+   - > to file
+   - >> append to file
+   - <
+   - <<
+   - 2> stderr to file
+   - 1> stdout to file
+   - 2>&1 stderr converted to stdout
+   - 2>&0 stderr converted to stdin
+
+   ```shell
+       tr a-z A-Z <test1 > test1 # test1 will be blank in the end 
+   ```
+
+   *[Stack overflow answer](https://stackoverflow.com/questions/6696842/how-can-i-use-a-file-in-a-command-and-redirect-output-to-the-same-file-without-t)*
+
+   > *You can't use redirection operator (> or >>) to the same file, because it has a higher precedence and it will create/truncate the file before the command is even invoked. To avoid that, you should use appropriate tools such as tee, sponge, sed -i or any other tool which can write results to the file (e.g. sort file -o file)*.
+
+
  **Tricky Exercises**
   - Отпечатайте 2 реда над вашия ред в /etc/passwd и 3 реда под него // може да стане и без пайпове
 
@@ -163,6 +182,9 @@ tar -czvf arhiva.tr b* # add all files that start with the letter b to the arhiv
   ```shell
      find /bin -type f -executable | wc -l  # for scripts
      find /bin -type f -name "*.txt" | wc -l #for ascii text 
+
+     find /bin -exec file {} \; | grep -Pc "script" 
+     find /bin -exec file {} \; | grep -Pc "ASCII text"
   ```
 
    - Направете списък с директориите на вашата файлова система, до които нямате достъп. Понеже файловата система може да е много голяма, търсете до 3 нива на дълбочина. А до кои директории имате достъп? Колко на брой са директориите, до които нямате достъп?
@@ -172,6 +194,21 @@ tar -czvf arhiva.tr b* # add all files that start with the letter b to the arhiv
       wc -l unavailableDir
       find ~ -maxdepth 3 -writable # have access to 
 
+      # Worst solution ever
+      find / -maxdepth 3 -print 2>&1 | grep -P "Permission denied" | cut -d ":" -f 2 | sed 's/ ‘//' | sed 's/’//' > unpermitedFiles.txt 
+
    ```
+
+   -  Изведете на екрана:
+	* статистика за броя редове, думи и символи за всеки един файл
+	* статистика за броя редове и символи за всички файлове
+	* общия брой редове на трите файла
+
+   ```shell
+      * wc -lwc file1 ..... # for every file new cmd 
+      * wc -lwc file1 file2 file3 ( wc -lwc *)
+      * wc -l file1 file2 file3 | awk '{sum+=$1} END{print sum}'; wc -c file1 file2 file3 | awk '{sum+=$1} END{print sum}' 
+   ```
+
 
   
