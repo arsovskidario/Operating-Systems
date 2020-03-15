@@ -1,0 +1,5 @@
+find -executable  # match executable files or searchable directories  
+     -empty  #dir or file that is empty
+     - [acm]time n #   n* 24 hours ago modified change or access
+     - [acm]newer file # file was a,c,m more recently than file
+     - [acm]min n # file status was change n minutes ago 

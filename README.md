@@ -1,21 +1,23 @@
-find dest -ctime -60 # change time 60min
-  	   -atime # access time
-	   -mtime # modified time
-ln src dest # src file you want to link to dest = destination of shortcut
-
-touch - creates regular file
-find ./ -type f  # show only regular files in specified directory
+**Summary based on practical lectures**
+- 
 
 
 **Inode** is a special key that has in itself GID,SID,time of change,size of file and other metadata
 it is useful for identifying a file 
 Files have to identificatiors the Inode and the Name of the file 
 
+
 **Hard Link** is a pointer to a directory with the same Inode as the directory it is pointing to
 In order to totally remove the file every hard link must be deleted. ( Basically every hard link acts like a original of the file it is linked to )
 
+ ```shell
+   ln src dest # src file you want to link to dest = destination of shortcut
+ ```
+
 To see more detail about file ( example . Inode , size , atime ,ctime mtime )
+```shel
 	stat <file_name>
+```
 
 The mtime in the file is changed when me save file, add new stuff in it.
 When mtime is changed the ctime is changed too.
@@ -23,13 +25,20 @@ When mtime is changed the ctime is changed too.
 If we only change the Inode or the metadata in the Inode then we only change the ctime and not the mtime .
 Example. chmod changes only the ctime of the file 
 
-ls -i  shows the inode numbers
-df -h shows the size of files
+```shell
+   ls -i  shows the inode numbers
+   df -h shows the size of files
+```
 
 Acces time is when you open the file
 
+
 **Soft links** work as shortcuts. They have different Inodes than the file they redirect to. 
 If you delete the original file the soft link won't be deleted.
+
+```shell
+   ln -s src dest # soft link 
+```
 
 Sticky bit = t in the end of the permission means that the file has root access
 
@@ -38,14 +47,8 @@ To be root :
  sudo su root
 ```
 
-find ./ -group group_name -perm 002 // only write permission
-
-find ./ -perm -g=w  # will take all the fiels that have write perm on group
-find ./ -perm g=w # will only look for files that will have only group write perm
-
-find -anewer file # find files that are newer then give file 
-find -anewer file -exec rm {} \; # remove files that are newer than given file
 tar -czvf arhiva.tr b* # add all files that start with the letter b to the arhiva.tr 
+
 
 **Grep** 
    - 
@@ -92,6 +95,65 @@ tar -czvf arhiva.tr b* # add all files that start with the letter b to the arhiv
    - $? specia symbol that returns the exit code of the last command ( 0 = okay,      1 = minor problem ex. cant acces subdir, 2 = serious trouble ex. command line arguments )
    - /dev/null special file (null device ) discards everything inputed to it and    return EOF
 
+
+**FIND**
+-  
+- scan through directory for a file or dir that fits a specific criteria
+- -type (d,f) search for dir or file
+- -name <input> search for file/dir with a given name
+  exampls:
+  ```shell
+     find . -name "darko.txt"
+     find . -name "darko.*" 
+     find . -name "darko*" # name contains darko
+     find . -name "*.pdf" # every pdf file 
+  ```
+- -iname <input> same as -name but case insensitive
+- -group <group_name> find file by group name
+- -user <group_name> find file by user name
+- -user <group_name> find file by user name
+- -perm <binary_or_symobols> find file based on a specifi permission
+```shell
+   find ./ -perm -g=w  # will take all the fiels that have write perm on group
+   find ./ -perm g=w # will only look for files that will have only group write perm
+   find / -perm -0777 # find all fies that have rwxrwxrwx permission
+   *Notice: without the - it will search for 000 permission*
+```
+- -mmin,amin,cmin +/ <number> modified number min ago (+more than 10min ago, - less than 10min ago)
+- -mtime,atime,ctime +/- <number> same as min but for days <number>*24 hours
+```shell
+   find dest -ctime -60 # change time 
+    	   -atime # access time
+   	   -mtime # modified time
+```
+ - -maxdepth<number> give number of levels the find can recursively search in 
+   *(prefered to be in front of the options )*
+```shell
+   find / -maxdepth 1 -type f -name "dario" # will look only in the curr directory
+   find / -maxdepth 2 -type f -name "dariO"# will look in subdirectories too
+```
+- -anewer <file_name> # find files that are newer then give file 
+```shell
+ find -anewer file -exec rm {} \; # remove files that are newer than given file 
+ ```
+- -size +/ <number>M/K/G search for file/dir +(above) <number> MB(M),KB(K),GB(G), -(below) that <number>
+- -empty  find empty files
+- -exec \; execute multiple commands when you find the specific file/dir
+
+- -printf print formated text 
+    -%Tk    File's  last modification time in the format specified by
+                     k, which is the same as for %A.
+    *-%T@  @ = seconds since Jan. 1, 1970, 00:00 GMT, *
+    -%s File's size in bytes.
+    -%p File's name.
+    -%n Number of hard links to file.
+    -%t File's last modification time in the format returned by the C `ctime' function.
+    ```shell
+       find / -printf '%T@ %p \n' #list all files and seconds from 1970 ,Starting from oldest to newest
+       find / -printf '%T@ %p \n' 2>/dev/null | tail -n 1 # grab name of last created file   
+    ```
+
+
 **TR**
    - 
    - translate or delete characters 
@@ -110,6 +172,7 @@ tar -czvf arhiva.tr b* # add all files that start with the letter b to the arhiv
    ```
    - *HINT: Handy when used for squeezing spaces and tabs in a text*
   
+
 **Sort**
    - 
    - can use file as input
@@ -122,7 +185,8 @@ tar -czvf arhiva.tr b* # add all files that start with the letter b to the arhiv
          sort -t ':' -nk 3 # sort by USERID numerically 
    ```  
 
- **Cut**
+
+**Cut**
    - 
 
 
@@ -149,9 +213,10 @@ tar -czvf arhiva.tr b* # add all files that start with the letter b to the arhiv
 
    > *You can't use redirection operator (> or >>) to the same file, because it has a higher precedence and it will create/truncate the file before the command is even invoked. To avoid that, you should use appropriate tools such as tee, sponge, sed -i or any other tool which can write results to the file (e.g. sort file -o file)*.
 
-   Pipelines passs stdout from one process to stdin in the chained process.
-
    *[Pipeline](https://en.wikipedia.org/wiki/Pipeline_(Unix))*
+
+   Pipelines passs stdout from one process to stdin in the chained process.
+   
    > *By default stderr is not passed through the pipe*
    ```
       use |& to pass even the stderr through the pipe
