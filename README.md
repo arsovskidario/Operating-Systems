@@ -141,15 +141,6 @@ tar -czvf arhiva.tr b* # add all files that start with the letter b to the arhiv
    - 2>&1 stderr converted to stdout
    - 2>&0 stderr converted to stdin
 
-   Pipelines passs stdout from one process to stdin in the chained process.
-
-   *[Pipeline](https://en.wikipedia.org/wiki/Pipeline_(Unix))*
-   > *By default stderr is not passed through the pipe*
-      use |& to pass even the stderr through the pipe
-
-
-
-
    ```shell
        tr a-z A-Z <test1 > test1 # test1 will be blank in the end 
    ```
@@ -158,6 +149,13 @@ tar -czvf arhiva.tr b* # add all files that start with the letter b to the arhiv
 
    > *You can't use redirection operator (> or >>) to the same file, because it has a higher precedence and it will create/truncate the file before the command is even invoked. To avoid that, you should use appropriate tools such as tee, sponge, sed -i or any other tool which can write results to the file (e.g. sort file -o file)*.
 
+   Pipelines passs stdout from one process to stdin in the chained process.
+
+   *[Pipeline](https://en.wikipedia.org/wiki/Pipeline_(Unix))*
+   > *By default stderr is not passed through the pipe*
+   ```
+      use |& to pass even the stderr through the pipe
+   ```
 
 
  **Tricky Exercises**
