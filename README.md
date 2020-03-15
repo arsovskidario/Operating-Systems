@@ -109,7 +109,6 @@ tar -czvf arhiva.tr b* # add all files that start with the letter b to the arhiv
    
    ```
    - *HINT: Handy when used for squeezing spaces and tabs in a text*
-   - 
   
 **Sort**
    - 
@@ -127,16 +126,29 @@ tar -czvf arhiva.tr b* # add all files that start with the letter b to the arhiv
    - 
 
 
+**Sed**
+  - 
 
- **Redirection**
-   - > to file
-   - >> append to file
+
+**Redirection and Pipelines**
+   - 
+   - /> to file
+   - />> append to file
    - <
    - <<
    - 2> stderr to file
    - 1> stdout to file
    - 2>&1 stderr converted to stdout
    - 2>&0 stderr converted to stdin
+
+   Pipelines passs stdout from one process to stdin in the chained process.
+
+   *[Pipeline](https://en.wikipedia.org/wiki/Pipeline_(Unix))*
+   > *By default stderr is not passed through the pipe*
+      use |& to pass even the stderr through the pipe
+
+
+
 
    ```shell
        tr a-z A-Z <test1 > test1 # test1 will be blank in the end 
@@ -145,6 +157,7 @@ tar -czvf arhiva.tr b* # add all files that start with the letter b to the arhiv
    *[Stack overflow answer](https://stackoverflow.com/questions/6696842/how-can-i-use-a-file-in-a-command-and-redirect-output-to-the-same-file-without-t)*
 
    > *You can't use redirection operator (> or >>) to the same file, because it has a higher precedence and it will create/truncate the file before the command is even invoked. To avoid that, you should use appropriate tools such as tee, sponge, sed -i or any other tool which can write results to the file (e.g. sort file -o file)*.
+
 
 
  **Tricky Exercises**
@@ -209,6 +222,34 @@ tar -czvf arhiva.tr b* # add all files that start with the letter b to the arhiv
       * wc -lwc file1 file2 file3 ( wc -lwc *)
       * wc -l file1 file2 file3 | awk '{sum+=$1} END{print sum}'; wc -c file1 file2 file3 | awk '{sum+=$1} END{print sum}' 
    ```
+   - Във file2 подменете всички малки букви с главни.
+   ```shell
+      tr a-z A-Z <file2 > file2.txt; mv file2.txt file2
+   ```
+
+   - Във file3 изтрийте всички "1"-ци.
+   ``shell
+      tr -d 1 < file3 > file3.txt ; mv file3.txt file3
+   ```
+
+   - Изведете статистика за най-често срещаните символи в трите файла.?
+   ```shell
+      insert code here
+   ```
+
+   - Изтрийте всички срещания на буквата 'a' (lower case) в /etc/passwd и намерете броят на оставащите символи.
+   ```shell
+      tr -d 'a' < /etc/passwd | wc -m 
+      sed -i 's/a//g' passwd.txt | cat passwd.txt | wc -m # -i means inplace 
+   ```
+   - Отпечатайте последната цифра на UID на всички редове между 28-ми и 46-ред в /etc/passwd.
+   ```shell
+       head -n 46 /etc/passwd | tail -n 18 | cut -d ":" -f 3 | grep -Po ".$" 
+   ```
+
+   - Didn't make the cut
+   - 
+      03-b-5400
 
 
   
