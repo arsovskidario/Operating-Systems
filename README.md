@@ -10,13 +10,13 @@ Files have to identificatiors the Inode and the Name of the file
 **Hard Link** is a pointer to a directory with the same Inode as the directory it is pointing to
 In order to totally remove the file every hard link must be deleted. ( Basically every hard link acts like a original of the file it is linked to )
 
- ```shell
+```shell
    ln src dest # src file you want to link to dest = destination of shortcut
- ```
+```
 
 To see more detail about file ( example . Inode , size , atime ,ctime mtime )
 ```shel
-	stat <file_name>
+   stat <file_name>
 ```
 
 The mtime in the file is changed when me save file, add new stuff in it.
@@ -48,6 +48,46 @@ To be root :
 ```
 
 tar -czvf arhiva.tr b* # add all files that start with the letter b to the arhiva.tr 
+
+
+**File**
+- 
+- displays short description  of file
+```shell
+   file README.md # UTF-8
+   file regexCheatSheet # ASCII CODE
+   file Week-1/ # directory
+```
+
+**Binary files**
+- display raw binary data from file (translates all the text in file to hex code)
+- **xxd**
+- 
+-  make a hexdump or do the reverse.
+- example;
+```shell
+   echo   D > hexCode.txt
+   xxd hexCode.txt 
+   * Will display : 00000000:2020 44 # 00000000:shows the number of line , 20 is space in hex ascii table , 44 is D in hex ascii table    
+```
+- **xargs**
+- 
+- use input with a cmd that doesnt normaly use stdin (it uses parametars only)
+```shell
+   find / -name "*.pdf" | xargs rm  # find all pdf files and remove them 
+   # faster than using -exec in find 
+```
+- by default xargs will get all the input and apply the command only one time on that input
+- n 1 will make it apply on every newline (operate one by one )
+```shell
+   users | xargs echo "Hello," # will print only one Hello, 
+   users | xargs echo -n 1 "Hello," #will print Hello, for every user   
+```
+- I{} create a variable  (the file will be put in the {} as a variable)
+```shell
+   find . -name "*.pdf" | xargs -I pdf rm pdf 
+```
+- -null  items are terminated by null character instead of whitespace
 
 
 **Grep** 
@@ -186,12 +226,82 @@ tar -czvf arhiva.tr b* # add all files that start with the letter b to the arhiv
    ```  
 
 
+**Uniq**
+- 
+- goes in combination in sort 
+- removes continues same strings from lines 
+  example :
+  ```
+      dario
+      dario 
+      dario 
+      brako
+      Result :
+      dario
+      brako
+  ```
+- -c counts the number of occurences 
+  example :
+  ```shell
+     dario
+     dario
+     dario
+     brako
+     uniq -c 
+     Result: 
+     3 dario
+     1 brako
+  ```
+- -d display only repeated strings in file with the highest repeated(most popular) being on top 
+   example :
+   ```shell
+      apple
+      apple
+      apple
+      pear
+      orange
+      pear
+      plum
+      orange
+      uniq -d
+      Result: 
+      apple
+      pear
+      orange
+   ```
+- -dc show even the count of the most popular
+- -u reverse the uniq command (not repeated lines by default)
+
+
 **Cut**
    - 
+   - extracts/filters text based on columns 
+   - -f <number> number of column you want to take
+   - -d <symbol> symbol represents a char that will be your delimiter (*By default it is TAB*)
+   - -c <range>  retrive bytes/chars from text file in a specific range
+   ```shell
+         cut -c 1-5 /etc/passwd # will retrive the first 5 chars of passwd file
+         cut -c 3 /etc/passwd # will return the 3rd character
+         cut -d ':' -f 2 /etc/passwd # will cut by : and take the 2 column
+   ```
+
+
+**Wc(word count)**
+-  
+-  wc - print line, word, and byte counts for each file
+- -c, --bytes - print the byte counts
+- -m, --chars - print the character counts
+- -l, --lines - print the newline counts
+- -w, --words - print the word counts
 
 
 **Sed**
   - 
+  - functions the same as TR
+  - -i can modify the file and write back the output in the same file
+  ```shell
+     sed -i 's/0/3/' foo.txt # s means substitute 0 with 3 in file
+  ```
 
 
 **Redirection and Pipelines**
