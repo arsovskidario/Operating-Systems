@@ -62,7 +62,6 @@ tar -czvf arhiva.tr b* # add all files that start with the letter b to the arhiv
 **Binary files**
 - display raw binary data from file (translates all the text in file to hex code)
 - **xxd**
-- 
 -  make a hexdump or do the reverse.
 - example;
 ```shell
@@ -71,7 +70,6 @@ tar -czvf arhiva.tr b* # add all files that start with the letter b to the arhiv
    * Will display : 00000000:2020 44 # 00000000:shows the number of line , 20 is space in hex ascii table , 44 is D in hex ascii table    
 ```
 - **xargs**
-- 
 - use input with a cmd that doesnt normaly use stdin (it uses parametars only)
 ```shell
    find / -name "*.pdf" | xargs rm  # find all pdf files and remove them 
@@ -286,7 +284,7 @@ tar -czvf arhiva.tr b* # add all files that start with the letter b to the arhiv
    ```
 
 
-**Wc(word count)**
+**Wc (word count)**
 -  
 -  wc - print line, word, and byte counts for each file
 - -c, --bytes - print the byte counts
