@@ -83,10 +83,10 @@ tar -czvf arhiva.tr b* # add all files that start with the letter b to the arhiv
 ```
 - I{} create a variable  (the file will be put in the {} as a variable)
 ```shell
-   find . -name "*.pdf" | xargs -I pdf rm pdf 
-```
 - -null  items are terminated by null character instead of whitespace
-
+```shell
+   ls -la | grep -Pv "(Wallpapers)"  | egrep -o "Screenshot.*" | xargs -I {} rm {}^
+```
 
 **Grep** 
    - 
@@ -179,13 +179,24 @@ tar -czvf arhiva.tr b* # add all files that start with the letter b to the arhiv
 - -exec \; execute multiple commands when you find the specific file/dir
 
 - -printf print formated text 
+    -%d depth of file
+    -%f file original name
+    -%p full path of file from search destination
+    -%P same as %p but without the first /
+    -%G get group id , %g group name or group id
+    -%U get user id, %u user name or user id
+    -%i file inode
+    -%m file permission in bits
+    -%M permission in symbolic form as in LS -L
+    -%s size of file in bytes
+    -%y file type 
+    -%n number of hard links 
     -%Tk    File's  last modification time in the format specified by
                      k, which is the same as for %A.
     *-%T@  @ = seconds since Jan. 1, 1970, 00:00 GMT, *
-    -%s File's size in bytes.
-    -%p File's name.
-    -%n Number of hard links to file.
-    -%t File's last modification time in the format returned by the C `ctime' function.
+    -%Ak acces time 
+    -%Ck same as %Tk but for change time 
+      *k = @,H(hour),M(min),S(sec),Z(timezone),D(mm/dd/yy)*
     ```shell
        find / -printf '%T@ %p \n' #list all files and seconds from 1970 ,Starting from oldest to newest
        find / -printf '%T@ %p \n' 2>/dev/null | tail -n 1 # grab name of last created file   
@@ -330,97 +341,36 @@ tar -czvf arhiva.tr b* # add all files that start with the letter b to the arhiv
       use |& to pass even the stderr through the pipe
    ```
 
+ **AWK**
+ - 
+ - Reads/Processes only one line at a time .
+ - NF is a variable that counts every word(separeted by whitespace default) in a every line.
+ - $NF prints the last word in every line.
+ ```shell
+   Input: 
+         A 25 27 50
+         B 35 75
+         C 75 7
+         D 99 88 76
+         awk '{print NF}'
+   Result : 
+         4
+         3
+         3
+         4
+ ```
 
- **Tricky Exercises**
-  - Отпечатайте 2 реда над вашия ред в /etc/passwd и 3 реда под него // може да стане и без пайпове
+ ```shell
+    awk '{count = ($2+$3+$4)/3;
+         if(count <50) print $0,": FAIL";
+         else if(count <60) print $0,": C";
+         else if(count <80) print $0,": B";
+         else print $0,": A";
+         }' inputs2
 
-  ```shell
-     awk 'BEGIN {printf "\n\n"} {printf$0;printf"\n"} END{printf "\n\n\n" }' passwd.txt
-  ```
+ ```
+ - Find the,that,those,then insensitive using extended grep( When Pearl version doesn't work :( )
+ ```shell
+     grep -iw -e  'the\|that\|those\|then' 
 
-  - Колко хора не се казват Ivan според /etc/passwd
-  ```shell
-     grep -Piwvc "Ivan" passwd.txt # w= only word , v = reversed ,c = match count 
-  ```
-  - Изведете имената на хората с второ име по-дълго от 7 (>7) символа според /etc/passwd
-  ```shell
-     cut -d ":" -f 5 passwd.txt | grep -P " \w{7}" | cut -d " " -f 1 > usernamesGreaterThenSeven.txt
-  ```
-
-  - Изведете имената на хората с второ име по-късо от 8 (<=7) символа според /etc/passwd // !(>7) = ?
-  ```shell
-     cut -d ":" -f 5 passwd.txt | cut -d " " -f 2 | grep -P "\w{1,7"| tr , " " > surnamesLessThanSeven.txt
-  ```
-
-  - Изведете целите редове от /etc/passwd за хората от 03-a-5003
-  ```shell
-    grep -Pi "[a-zA-Z]*\s+[a-zA-Z]{7}[,\s]" passwd.txt > linesWithGreaterUsername
-  ```
-
-  - Вижте man 5 services. Напишете команда, която ви дава името на протокол с порт естествено число N. Командата да не отпечатва нищо, ако търсения порт не съществува (например при порт 1337). Примерно, ако номера на порта N е 69, командата трябва да отпечати tftp.
-  ```shell
-     cat /etc/services | tr -s '\t' | cut -f 2 | grep -P "\d+/(tcp|udp)" | awk -F '[/]' 'if($1 == 69){printf "tftp\n" } if($1 <= 1024){printf $0; printf "\n" } > servicesResult'
-  ```
-
-  - Колко файлове в /bin са shell script? (Колко файлове в дадена директория са ASCII text?)
-  ```shell
-     find /bin -type f -executable | wc -l  # for scripts
-     find /bin -type f -name "*.txt" | wc -l #for ascii text 
-
-     find /bin -exec file {} \; | grep -Pc "script" 
-     find /bin -exec file {} \; | grep -Pc "ASCII text"
-  ```
-
-   - Направете списък с директориите на вашата файлова система, до които нямате достъп. Понеже файловата система може да е много голяма, търсете до 3 нива на дълбочина. А до кои директории имате достъп? Колко на брой са директориите, до които нямате достъп?
-
-   ```shell
-      find ~ -maxdepth 3 ! -writable > unavailableDir
-      wc -l unavailableDir
-      find ~ -maxdepth 3 -writable # have access to 
-
-      # Worst solution ever
-      find / -maxdepth 3 -print 2>&1 | grep -P "Permission denied" | cut -d ":" -f 2 | sed 's/ ‘//' | sed 's/’//' > unpermitedFiles.txt 
-
-   ```
-
-   -  Изведете на екрана:
-	* статистика за броя редове, думи и символи за всеки един файл
-	* статистика за броя редове и символи за всички файлове
-	* общия брой редове на трите файла
-
-   ```shell
-      * wc -lwc file1 ..... # for every file new cmd 
-      * wc -lwc file1 file2 file3 ( wc -lwc *)
-      * wc -l file1 file2 file3 | awk '{sum+=$1} END{print sum}'; wc -c file1 file2 file3 | awk '{sum+=$1} END{print sum}' 
-   ```
-   - Във file2 подменете всички малки букви с главни.
-   ```shell
-      tr a-z A-Z <file2 > file2.txt; mv file2.txt file2
-   ```
-
-   - Във file3 изтрийте всички "1"-ци.
-   ``shell
-      tr -d 1 < file3 > file3.txt ; mv file3.txt file3
-   ```
-
-   - Изведете статистика за най-често срещаните символи в трите файла.?
-   ```shell
-      insert code here
-   ```
-
-   - Изтрийте всички срещания на буквата 'a' (lower case) в /etc/passwd и намерете броят на оставащите символи.
-   ```shell
-      tr -d 'a' < /etc/passwd | wc -m 
-      sed -i 's/a//g' passwd.txt | cat passwd.txt | wc -m # -i means inplace 
-   ```
-   - Отпечатайте последната цифра на UID на всички редове между 28-ми и 46-ред в /etc/passwd.
-   ```shell
-       head -n 46 /etc/passwd | tail -n 18 | cut -d ":" -f 3 | grep -Po ".$" 
-   ```
-
-   - Didn't make the cut
-   - 
-      03-b-5400
-
-
-  
+ ```
