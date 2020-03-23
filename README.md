@@ -374,6 +374,11 @@ tar -czvf arhiva.tr b* # add all files that start with the letter b to the arhiv
      grep -iw -e  'the\|that\|those\|then' 
 
  ```
+ 
+- NR - prints number of row(line) you want from the text
+```shell
+   awk 'NR==1 END{print}' # will print first row and END will print last row 
+``` 
 
 
 **EXERCISES**
