@@ -82,10 +82,9 @@ tar -czvf arhiva.tr b* # add all files that start with the letter b to the arhiv
    users | xargs echo -n 1 "Hello," #will print Hello, for every user   
 ```
 - I{} create a variable  (the file will be put in the {} as a variable)
-```shell
 - -null  items are terminated by null character instead of whitespace
 ```shell
-   ls -la | grep -Pv "(Wallpapers)"  | egrep -o "Screenshot.*" | xargs -I {} rm {}^
+   ls -la | grep -Pv "(Wallpapers)"  | egrep -o "Screenshot.*" | xargs -I {} rm {}
 ```
 
 **Grep** 
@@ -102,7 +101,7 @@ tar -czvf arhiva.tr b* # add all files that start with the letter b to the arhiv
    - -A <number> number of lines after match
    - -C <number> number of lines before and after the match
    
-   ./* =>search for every dir and file 
+     ./* =>search for every dir and file 
    
 
    - -l shows files that contain the match 
@@ -484,31 +483,31 @@ tar -czvf arhiva.tr b* # add all files that start with the letter b to the arhiv
 
 **Scripting** 
 - 
-- **Variables**
-- 
-- **Environment variables**
-   - variables that are created in the current shell and are accessible by all derived shells from the original shell.
-   - you can override the inherited variables from parent
-   - **printenv** shows all the environmental variables
-   - **export** makes shell variable to an environmental variable.
-   - **export -n** demotes a environmental variable back to a shell variable.
-
-- **Shell variable**
-   - variable only available in shell that it was created in. 
-   - **set** shows all shell variables.
-   - **unset** unset a shell variable.
-   - by convention variables should be name with UPPERCASE.
-
-- **Creating scripts**
-- 
-- **#!/bin/bash** -> use bash as the scripts command-line interpreter.
-- .sh - convient name for script 
-- chmod +x <name>.sh set the script to be executable
-- **when you open a script from one shell it will have 2 shells running at the same time, one being the one that executes the code in the script**
-- **variables in the script wont be accesible to you unless you open the script using the special cmd *source***
-- **source <name>.sh** is a bash shell built-in command that executes the content of the file passed as argument, in the current shell.
-- this cmd allows you to use the variables in the script as local shell variables.
-- when using variables inside cmds make sure to use ${VAR} notation
+   - **Variables**
+   - 
+      - **Environment variables**
+         - variables that are created in the current shell and are accessible by all derived shells from the original shell.
+         - you can override the inherited variables from parent
+         - **printenv** shows all the environmental variables
+         - **export** makes shell variable to an environmental variable.
+         - **export -n** demotes a environmental variable back to a shell variable.
+   
+      - **Shell variable**
+         - variable only available in shell that it was created in. 
+         - **set** shows all shell variables.
+         - **unset** unset a shell variable.
+         - by convention variables should be name with UPPERCASE.
+   
+   - **Creating scripts**
+   - 
+      - **#!/bin/bash** -> use bash as the scripts command-line interpreter.
+      - .sh - convient name for script 
+      - chmod +x <name>.sh set the script to be executable
+      - **when you open a script from one shell it will have 2 shells running at the same time, one being the one that executes the code in the script**
+      - **variables in the script wont be accesible to you unless you open the script using the special cmd *source***
+      - **source <name>.sh** is a bash shell built-in command that executes the content of the file passed as argument, in the current shell.
+      - this cmd allows you to use the variables in the script as local shell variables.
+      - when using variables inside cmds make sure to use ${VAR} notation
 
 
 
