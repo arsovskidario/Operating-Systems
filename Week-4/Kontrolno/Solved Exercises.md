@@ -67,3 +67,9 @@
          | tr "," ":" | cut -d ":" -f 1,5 | tr " " "\t"
 
     ```
+
+  **12**
+  - 
+   A)  find ~ -inum $(find ~ -printf "%i %T@\n" 2>/dev/null | sort -nrk2 | head -n 1  | cut -d " " -f 1) -printf "%d \n"  2>/dev/null
+
+   B) 

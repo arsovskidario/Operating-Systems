@@ -230,6 +230,7 @@ tar -czvf arhiva.tr b* # add all files that start with the letter b to the arhiv
    - -r  reverse sort
    - -n  numberical sort
    - -t  field separator ( change it if you want for it to be different from psace )
+   - -u unique (same as cmd unique )
    ```shell
          sort -t ':' -nk 3 # sort by USERID numerically 
    ```  
@@ -291,7 +292,8 @@ tar -czvf arhiva.tr b* # add all files that start with the letter b to the arhiv
    ```shell
          cut -c 1-5 /etc/passwd # will retrive the first 5 chars of passwd file
          cut -c 3 /etc/passwd # will return the 3rd character
-         cut -d ':' -f 2 /etc/passwd # will cut by : and take the 2 column
+         cut -d ':' -f 2 /etc/passwd # will cut by : and take the 2 column 
+         cut -d ":" -f 2, # take from 2 column onwards
    ```
 
 
@@ -380,6 +382,71 @@ tar -czvf arhiva.tr b* # add all files that start with the letter b to the arhiv
    awk 'NR==1 END{print}' # will print first row and END will print last row 
 ``` 
 
+**Processes**
+- 
+- PID (process ID)
+- Nice value 
+   * [-20 highest priority,19 lowest] , default=0
+   * стойност който определя, кои процес ще се изпълни преди другите. (пример. като приоритетна опашка)
+- Memory
+   * всеки процес има право да достъпи някакви сегменти в паметта и про достъп на не позволена памет той бива убит.
+- Security context
+   * стойност която информира ОС за кои права на достъп (privileges) има процесът.
+- Scheduling 
+   * преценява се на кой процес, колко време ще трябва да му се даде от страна на ОС.
+- Context Switch
+   * създава илюзия, че процесите работят едновременно а те реално се switchvat един друг и се прекъсват за много мали интервали.
+- Enviroment (enviroment i shell promenlivi)
+- File descriptor (pipes,sockets,etc)
+   * stdin
+   * stdout
+   * stderr 
+
+- init(PID=1)
+   * пръв процес в Линукс който не се създава с fork()
+   * starts first during booting
+   * is the direct or indirect parent of all the processes (Like the object class in Java)
+
+- pstree
+   * displays a tree of processes
+   * since every process has a parent a tree structure is formed.
+
+- child process
+   * process created using the fork() function
+   * copy of parent process
+
+- fork()
+   * creates a new process by duplicating the calling process.
+   * the created process is called a **child process** and the calling process is called the **parent process**.
+   * processes created run in separate memory from the parent.
+   * the child process is an exact copy except for : 
+      * the child has its own ID, different from the parent,
+      * child parent PID = PID of parent
+      * doesnt get some signals,semaphores from parent.
+
+- exec 
+   * used to run cmds in shell
+   * without parameters = 'unholy power'
+      example : 
+         ```shell
+            exec > myFile # everything in this script will be redirected to myFile and won't be displayed on screen
+            cat passwd
+            date 
+            echo "hell"
+         ```
+
+- Process states
+   * R - running
+   * D - uninterruptable sleep(usually IO)
+      * linked directly to hardware
+      * can't be touched because its executing IO operations.
+   * S - interruptable sleep(waiting for event to complete /sleeping)
+      * waiting for signals in order to start executing.
+      * mainly all processes are in this state.
+   * T - stopped processes by a job.
+   * Z - zombie/defunct 
+      * process has completed execution but still appears in the process tab.
+      
 
 **EXERCISES**
 -  
