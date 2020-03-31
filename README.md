@@ -426,8 +426,9 @@ tar -czvf arhiva.tr b* # add all files that start with the letter b to the arhiv
 
 - exec 
    * used to run cmds in shell
-   * without parameters = 'unholy power'
-      example : 
+   * without parameters = "unholy power"
+   
+- example : 
          ```shell
             exec > myFile # everything in this script will be redirected to myFile and won't be displayed on screen
             cat passwd
@@ -446,9 +447,10 @@ tar -czvf arhiva.tr b* # add all files that start with the letter b to the arhiv
    * T - stopped processes by a job.
    * Z - zombie/defunct 
       * process has completed execution but still appears in the process tab.
-      
+
 
 **EXERCISES**
 -  
 
 - **[3.Обработка на текст](https://github.com/arsovskidario/Operating-Systems/blob/master/Exercises/3.%D0%9E%D0%B1%D1%80%D0%B0%D0%B1%D0%BE%D1%82%D0%BA%D0%B0%20%D0%BD%D0%B0%20%D1%82%D0%B5%D0%BA%D1%81%D1%82.md)**
+- **[4.Процеси](https://github.com/arsovskidario/Operating-Systems/blob/master/Exercises/problems-04-solutions.md)**
