@@ -343,6 +343,7 @@ tar -czvf arhiva.tr b* # add all files that start with the letter b to the arhiv
       use |& to pass even the stderr through the pipe
    ```
 
+
  **AWK**
  - 
  - Reads/Processes only one line at a time .
@@ -381,6 +382,7 @@ tar -czvf arhiva.tr b* # add all files that start with the letter b to the arhiv
 ```shell
    awk 'NR==1 END{print}' # will print first row and END will print last row 
 ``` 
+
 
 **Processes**
 - 
@@ -428,7 +430,7 @@ tar -czvf arhiva.tr b* # add all files that start with the letter b to the arhiv
    * used to run cmds in shell
    * without parameters = "unholy power"
    
-- example : 
+   * example 
          ```shell
             exec > myFile # everything in this script will be redirected to myFile and won't be displayed on screen
             cat passwd
@@ -448,9 +450,69 @@ tar -czvf arhiva.tr b* # add all files that start with the letter b to the arhiv
    * Z - zombie/defunct 
       * process has completed execution but still appears in the process tab.
 
+**PS**
+- 
+- displays current running processes.
+- -u <username> shows processes for specific user
+- -e display every process on system
+- -l long list for ps cmd
+- -o print in specific format (pid,ppid,user,group,cmd,drs=physical memory,vsz = virtual memory,time)
+- ps -e -o user=Ime # change name of column header
+- --sort=<condition> sort by give condition ex. --sort=start_time 
+
+**JOBS**
+- 
+- lists your own processes
+- processes can work in background and in the foreground
+- *fg <id>* puts a process in forground (id se dobiva od jobs [])
+- *bg<id>* puts a process in background
+- *cmd &* puts a process in background 
+- when a process is working in the background you can still use your terminal for cmds, the oposite is not true for processes working in the forground.
+
+- **Kill** 
+- 
+- you can signal your processes whilest root can signal all processes.
+- kills(terminates) it by default. (15)
+- kill -9 <pid> kills a process that doesn't want to terminate.
+- First you try to terminate the process, then if that doesn't work you kill it.
+
+```shell
+   kill -SIGTERM <pid>
+   kill -SIGKILL <pid>
+```
+
+
+**Scripting** 
+- 
+- **Variables**
+- 
+- **Environment variables**
+   - variables that are created in the current shell and are accessible by all derived shells from the original shell.
+   - you can override the inherited variables from parent
+   - **printenv** shows all the environmental variables
+   - **export** makes shell variable to an environmental variable.
+   - **export -n** demotes a environmental variable back to a shell variable.
+
+- **Shell variable**
+   - variable only available in shell that it was created in. 
+   - **set** shows all shell variables.
+   - **unset** unset a shell variable.
+   - by convention variables should be name with UPPERCASE.
+
+- **Creating scripts**
+- 
+- **#!/bin/bash** -> use bash as the scripts command-line interpreter.
+- .sh - convient name for script 
+- chmod +x <name>.sh set the script to be executable
+- **when you open a script from one shell it will have 2 shells running at the same time, one being the one that executes the code in the script**
+- **variables in the script wont be accesible to you unless you open the script using the special cmd *source***
+- **source <name>.sh** is a bash shell built-in command that executes the content of the file passed as argument, in the current shell.
+- this cmd allows you to use the variables in the script as local shell variables.
+- when using variables inside cmds make sure to use ${VAR} notation
+
+
 
 **EXERCISES**
 -  
-
 - **[3.Обработка на текст](https://github.com/arsovskidario/Operating-Systems/blob/master/Exercises/3.%D0%9E%D0%B1%D1%80%D0%B0%D0%B1%D0%BE%D1%82%D0%BA%D0%B0%20%D0%BD%D0%B0%20%D1%82%D0%B5%D0%BA%D1%81%D1%82.md)**
 - **[4.Процеси](https://github.com/arsovskidario/Operating-Systems/blob/master/Exercises/problems-04-solutions.md)**
