@@ -390,7 +390,7 @@ tar -czvf arhiva.tr b* # add all files that start with the letter b to the arhiv
    * [-20 highest priority,19 lowest] , default=0
    * стойност който определя, кои процес ще се изпълни преди другите. (пример. като приоритетна опашка)
 - Memory
-   * всеки процес има право да достъпи някакви сегменти в паметта и про достъп на не позволена памет той бива убит.
+   * всеки процес има право да достъпи някакви сегменти в паметта и при достъп на не позволена памет той бива убит.
 - Security context
    * стойност която информира ОС за кои права на достъп (privileges) има процесът.
 - Scheduling 
@@ -468,8 +468,7 @@ tar -czvf arhiva.tr b* # add all files that start with the letter b to the arhiv
 - *cmd &* puts a process in background 
 - when a process is working in the background you can still use your terminal for cmds, the oposite is not true for processes working in the forground.
 
-- **Kill** 
-- 
+- **<ins>Kill</ins>** 
 - you can signal your processes whilest root can signal all processes.
 - kills(terminates) it by default. (15)
 - kill -9 <pid> kills a process that doesn't want to terminate.
@@ -508,7 +507,28 @@ tar -czvf arhiva.tr b* # add all files that start with the letter b to the arhiv
       - **source <name>.sh** is a bash shell built-in command that executes the content of the file passed as argument, in the current shell.
       - this cmd allows you to use the variables in the script as local shell variables.
       - when using variables inside cmds make sure to use ${VAR} notation
+   
+   - **Test**
+   - 
+      - special command that is used for testing(comparing) data inside conditionals and loops;
+      - -eq,-gt,-ge,-lt,-le 
+      - comparing strings with "string"
+      - "string1" = "strin2" or test ["dario" = "dario"]
 
+   - **Parametars**
+
+   - **Loop String**
+   - 
+     ```bash
+         #C style 
+         foo=string
+         for (( i=0; i<${#foo}; i++ )); do
+           echo "${foo:$i:1}"
+         done
+     ```
+
+   - ${#foo} expands to the length of foo. ${foo:$i:1} expands to the substring starting at position $i of length 1.
+   - [Link to answer](https://stackoverflow.com/a/10552175/11054284)
 
 
 **EXERCISES**

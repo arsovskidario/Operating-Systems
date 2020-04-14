@@ -1,0 +1,13 @@
+#!/bin/bash
+
+[ $# -gt 0 ] || exit 1
+
+for i in [ seq 1 $# ]; do
+	if [ "$1" = "Dario" ] ; then
+		echo "User found" 
+		exit 0
+        fi
+  shift 1 
+done
+exit 2 # user not found
+
