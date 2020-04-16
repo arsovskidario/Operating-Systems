@@ -527,9 +527,17 @@ tar -czvf arhiva.tr b* # add all files that start with the letter b to the arhiv
          done
      ```
 
-   - ${#foo} expands to the length of foo. ${foo:$i:1} expands to the substring starting at position $i of length 1.
+   - **${#foo} expands to the length of foo. ${foo:$i:1} expands to the substring starting at position $i of length 1.**
    - [Link to answer](https://stackoverflow.com/a/10552175/11054284)
-
+   - **Using the‘#’ symbol to count the length of a string**
+   ```bash
+      $ string="Learn Bash Programming with LinuxHint"
+      $ echo ${#string} #  Output: 37
+   ```
+   - **Convert arguments into string**
+   - to avoid special characters not being used as a string in script
+   - str="'$*'" or str="'$@'"
+   - [Link to answer](https://unix.stackexchange.com/a/197794/402386)
 
 **EXERCISES**
 -  

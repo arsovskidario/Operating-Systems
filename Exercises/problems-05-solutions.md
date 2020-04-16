@@ -176,3 +176,171 @@
   ```  
 
 
+- -- 05-b-4400
+  ```bash
+        #!/bin/bash
+        if [ $# -eq 0 ]; then
+                echo "Invalid arguments"
+                exit 1
+        fi
+
+        SOURCE=$1
+        DESTINATION=$2
+        if [ -z "$DESTINATION" ]; then
+                DESTINATION="./"
+        fi
+
+                find $SOURCE -type f -mmin -45 -printf "%p" -exec cp {}         $DESTINATION \; >/dev/null
+
+        
+        echo "DONE"
+  ```
+
+- **-- 05-b-4500**
+  ```bash
+        #!/bin/bash
+
+        if [ $# -eq 0 ]; then
+                echo "Invalid arguments"
+                exit 2
+        fi
+
+        USER_ID=$1
+
+        ERROR_STATUS=1
+
+        while :
+        do
+
+                if [ $ERROR_STATUS -eq 1 ]; then
+                        who | grep -w $USER_ID >/dev/null # Output not  specified
+                        ERROR_STATUS=$?
+                else
+                        break
+                fi
+
+                sleep 1
+        done
+
+        echo "Done"
+
+  ```
+  
+  - -- 05-b-4600
+
+  ```bash
+     #!/bin/bash
+        if [ $# -lt 3 ]; then
+                echo "Invalid arguments"
+        fi
+        
+        NUMBER=$1
+        START=$2
+        END=$3
+        
+        # Check arguments for integer values
+        printf "'$*'" | grep -w "[0-9]*\s[0-9]*\s[0-9]*" >/dev/null
+        
+        # If any argument is different from integer exit status 3
+        if [ $? -eq 1 ]; then
+                exit 3
+        fi
+        
+        if [ $2 -gt $3 ] ; then
+                exit 2
+        fi
+        
+        if [ $1 -gt $2 ] && [ $1 -lt $3 ] ; then
+                exit 0
+        else
+                exit 1
+        fi
+        
+        #Script kiddie material right here
+
+  ```
+
+- -- 05-b-4700
+  ```bash
+     #!/bin/bash
+
+        if [ $# -eq 0 ] || [ $# -ge 3 ] ; then
+                echo "Invalid arguments"
+                exit 2
+        fi
+
+        NUMBER=$1
+        DELIMETAR=$2
+
+        if [ $# -eq 1 ]; then
+                DELIMETAR=' '
+        fi
+
+        for (( i=0; i<${#NUMBER};i++ )); do
+                (( COUNTER=${#NUMBER} - i ))
+                if [ $(( COUNTER % 3 )) -eq 1 ] && [ $i -ne $(( ${#NUMBER}-1 )  ) ]; then
+                        printf "${NUMBER:$i:1}${DELIMETAR}"
+                else
+                        printf "${NUMBER:$i:1}"
+                fi
+        done
+
+        echo #adds a newline
+
+  ```
+
+- -- 05-b-4800
+  ```bash
+     #!/bin/bash
+
+        if [ $# -ne 2 ]; then
+                echo "Invalid arguments"
+                exit 2
+        fi
+
+        #Check if it is a dir or a file ?
+        FILE_NAME=$1
+        DIR_NAME=$2
+
+        DIR_CONTENT=$(find ${DIR_NAME} -type f -printf "%f " 2>/dev/null)
+
+        for i in ${DIR_CONTENT}
+        do
+                cmp ${FILE_NAME} $i
+                if [ $? -eq 0 ]; then
+                        echo $i
+                fi
+        done
+
+  ```
+
+- -- 05-b-5500
+
+  ```bash
+     #!/bin/bash
+
+        echo "<table>"
+        echo "<tr> "
+        echo "  <th>Username</th> "
+        echo "  <th>group</th> "
+        echo "  <th>login</th> "
+        echo "  <th>GECKO</th> "
+        echo "</tr> "
+        
+        for ((i=1;i<=$(wc -l passwd.txt | cut -d " " -f 1);i++)); do
+                USERNAME=$(cat passwd.txt | head -n $i | tail -n 1 | cut -d     ":" -f 1)
+                GROUP=$(cat passwd.txt | head -n $i | tail -n 1 | cut -d ":"    -f 4)
+                SHELL=$(cat passwd.txt | head -n $i | tail -n 1 | cut -d ":"    -f 7)
+                GECKO=$(cat passwd.txt | head -n $i | tail -n 1 | cut -d ":"    -f 5)
+                echo "<tr>"
+                echo "<td>${USERNAME}</td>"
+                echo "<td>${GROUP}</td>"
+                echo "<td>${SHELL}</td>"
+                echo "<td>${GECKO}</td>"
+                echo "</tr>"
+        
+        done
+        
+        echo "</table>"
+   
+  ```
