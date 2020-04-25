@@ -150,6 +150,7 @@ tar -czvf arhiva.tr b* # add all files that start with the letter b to the arhiv
 - -user <group_name> find file by user name
 - -user <group_name> find file by user name
 - -perm <binary_or_symobols> find file based on a specifi permission
+- -executable for executable files 
 ```shell
    find ./ -perm -g=w  # will take all the fiels that have write perm on group
    find ./ -perm g=w # will only look for files that will have only group write perm
@@ -382,6 +383,12 @@ tar -czvf arhiva.tr b* # add all files that start with the letter b to the arhiv
    awk 'NR==1 END{print}' # will print first row and END will print last row 
 ``` 
 
+- -v add a variable from bash 
+```shell
+   $NUMBER=69
+   awk -v NUMBER=$NUMBER '{printf NUMBER}'
+```
+
 
 **Processes**
 - 
@@ -516,7 +523,13 @@ tar -czvf arhiva.tr b* # add all files that start with the letter b to the arhiv
       - "string1" = "strin2" or test ["dario" = "dario"]
 
    - **Parametars**
+   - 
+   - $@ get a list of all arguments passed
 
+   - **Get user input**
+   - 
+   - read VAR enables you to intake a variable from user input
+   - read -n "Enter " var  lets you prompt a text message infront
    - **Loop String**
    - 
      ```bash
@@ -538,6 +551,9 @@ tar -czvf arhiva.tr b* # add all files that start with the letter b to the arhiv
    - to avoid special characters not being used as a string in script
    - str="'$*'" or str="'$@'"
    - [Link to answer](https://unix.stackexchange.com/a/197794/402386)
+
+   - **RANDOM**
+   -  $(( (RANDOM % b) + a  ))
 
 **EXERCISES**
 -  

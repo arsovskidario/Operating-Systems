@@ -392,3 +392,218 @@
 
 
   ```
+
+-- 05-b-7000
+  ```bash
+        #!/bin/bash
+
+        if [ $# -eq 0 ]; then
+                echo "Invalid arguments"
+                exit 2
+        fi
+
+        for i in $@
+        do
+                echo "$i number lines : $(wc -l $i | cut -d " " -f 1 )"
+        done
+   
+  ```
+
+-- 05-b-7100
+  ```bash
+        #!/bin/bash
+
+        if [ $# -ne 2 ]; then
+                echo "Invalid arguments"
+                exit 2
+        fi
+
+        DIR=$1
+        NUMBER=$2
+
+        find $DIR -type f -printf "%f %b \n" 2>/dev/null | awk -v NUMBER=$NUMBER '{ if($2>NUMBER) printf "%s \n",$1}'
+
+  ```
+
+-- 05-b-7200
+  ```bash
+        #!/bin/bash
+        for i in $@
+        do
+                if [ -f $i ];then
+                        echo "$i is a file, contents:"
+                        cat $i
+                elif [ -d $i ];then
+                        echo "$i is a directory"
+                        NUMBER_CONTENTS=$(ls $i | wc -l )
+                        echo "Files greater than directories content : "
+                        find $i -type f -printf "%f %b \n" 2>/dev/null | awk    -v NUMBER=$NUMBER_CONTENTS '{if($2>NUMBER) printf "%s      \n",$1 }'
+                fi
+        done
+  ```
+
+- -- 05-b-7500
+  ```bash
+        #!/bin/bash
+
+        RANDOM_NUMBER=$(( (RANDOM % 100) + 1 ))
+        NUMBER_TRIES=0
+        while :
+        do
+                read -p "Enter a number:" INPUT
+                (( NUMBER_TRIES=NUMBER_TRIES+1 ))
+
+                if [ $INPUT -gt $RANDOM_NUMBER ]; then
+                        echo "Go lower"
+                elif [ $INPUT -lt $RANDOM_NUMBER ]; then
+                        echo "Go higher"
+                else
+                        echo "Correct! Number of guesses $NUMBER_TRIES"
+                        exit 0
+                fi
+        done
+  ```
+
+-- 05-b-7550
+
+  ```bash
+        #!/bin/bash
+
+        if [ $# -eq 0 ]; then
+                echo "Nothing to terminate"
+                exit 2
+        fi
+
+        USER=$1
+        PROCESSES=$(ps -o user,pid,cmd | tr -s " " | grep -w "$USER" | cut -d           " " -f 2 )
+        COUNTER=0
+        for i in $PROCESSES
+        do
+                echo $i
+                kill -9 $i # Rest in peace process
+                (( COUNTER=COUNTER+1))
+        done
+   
+  ```
+
+-- 05-b-7700
+
+  ```bash
+     #!/bin/bash
+
+        if [ $# -ne 2 ]; then
+                echo "Invalid arguments"
+                exit 2
+        fi
+
+        DIR=$1
+        NUMBER=$2
+
+        find $DIR -type f -printf "%f %b \n" 2>/dev/null | awk -v NUMBER=$NUMBER 'BEGIN{SUM=0}{ if($2>NUMBER) SUM+=$2} END{printf "Result :%s \n",SUM}'
+   
+  ```
+
+-- 05-b-7800
+  ```bash
+        #!/bin/bash
+
+        NEW_PATH=$(echo $PATH | tr ":" " ")
+        COUNT=0
+        for i in $NEW_PATH; do
+                (( COUNT=COUNT+$(find $i -type f -executable 2>/dev/null | wc   -l) ))
+        done
+        echo "Final result : $COUNT"   
+  ```
+
+-- 05-b-8000
+  ```bash
+        #!/bin/bash
+
+        if [ $# -ne 1 ] ; then
+                echo "Invalid arguments"
+                exit 3
+        fi
+
+        USER=$1
+
+        ps -o user,pid,rss,vsz | grep -w "$USER" |tr -s " " | sort -nrk 4 |     awk '{printf "PID:%s RATION:%s \n",$2,$3/$4}'
+   
+  ```
+
+--- 05-b-9100
+  ```bash
+        #!/bin/bash
+
+        if [ $# -ne 2 ]; then
+                echo "Invalid arguments"
+                exit 2
+        fi
+
+        SRC=$1
+        DST=$2
+
+        EXTENTIONS=$(find $SRC -type f -name "*.*" -printf "%f \n" 2>/dev/null  |cut -d "." -f 2 | sort | uniq)
+        for i in $EXTENTIONS
+        do
+                mkdir -p $DST/$i
+                find $SRC -name "*.$i" -exec cp {} $DST/$i \; 2>/dev/null
+        done
+
+  ```
+
+- -- 05-b-9200
+  ```bash
+        #!/bin/bash
+
+        RECURSIVE=0
+        if [ "$1" == -r ]; then
+                ((RECURSIVE=1))
+        fi
+
+        for i in $@
+        do
+                if [ "$i" == "-r" ]; then
+                     continue
+                fi
+
+                NUM_FILES=$(ls $i | wc -l)
+
+                if [ $NUM_FILES -eq 0 ]; then
+                        rmdir $i
+                        echo "[$(date +"%y-%m-%d %T")] $i" >> ~/Development/    Operating-Systems/Week-5/logs/remove.log
+                fi
+
+                if [ $RECURSIVE -eq 1 ]; then
+                        rm -r $i
+                        echo "[$(date +"%y-%m-%d %T")] $i" >> ~/Development/    Operating-Systems/Week-5/logs/remove.log
+                fi
+
+        done
+   
+  ```
+
+--- 05-b-9500
+  ```bash
+        #!/bin/bash
+
+        if [ $# -ne 2 ];then
+                echo "Invalid arguments"
+                exit 2
+        fi
+
+        RED="\033[0;31m"
+        GREEN="\033[0;32m"
+        BLUE="\033[0;34m"
+
+        if [ "$1" == "-r" ] ; then
+                echo -e "$RED$2"
+        elif [ "$1" == "-g" ]; then
+                echo -e "$GREEN$2"
+        elif [ "$1" == "-b" ]; then
+                echo -e "$BLUE$2"
+        fi
+        echo -e '\033[0m'
+
+  ```
+
+  
