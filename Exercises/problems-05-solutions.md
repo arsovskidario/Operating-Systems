@@ -606,4 +606,78 @@
 
   ```
 
-  
+- -- 05-b-9600
+  ```bash
+        #!/bin/bash
+
+        if [ $# -eq 0 ];then
+                echo " So you don't want to delete anything ?"
+                exit 2
+        fi
+
+        RECURSIVE=0 # 0=false 1=true
+        SRC_BACK=/home/dario/Development/Operating-Systems/Week-5/      DeleteWithBackup/backup
+        if [ "$1" == "-r" ]; then
+                ((RECURSIVE=1))
+        fi
+
+        for i in $@
+        do
+                if [ "$i" == "-r" ]; then
+                        continue
+                fi
+
+                NEW_NAME=""$i"_$(date +"%y-%m-%d-%T" | tr ":" "-"
+        ).tar"
+                if [  $(ls $i | wc -l ) -eq 0 ]; then
+                        tar -cvf $NEW_NAME ./$i
+                        mv $NEW_NAME $SRC_BACK
+                        rmdir $i
+                elif [ $RECURSIVE -eq 1 ]; then
+                        echo "$NEW_NAME"
+                        tar -cvf $NEW_NAME  --exclude=./$NEW_NAME $i
+                        mv $NEW_NAME $SRC_BACK
+                        rm -r $i
+                fi
+        done
+
+  ```
+
+- -- 05-b-9601
+  ```bash
+        #!/bin/bash
+
+        SRC_BACK=/home/dario/Development/Operating-Systems/Week-5/      DeleteWithBackup/backup
+        if [ "$1" == "-l" ];then
+                ls $SRC_BACK | awk -F "_" '{printf "%s (%s-%s)\n",$1,$2,$3}' |  sed 's/.tar//'
+                exit 1
+        fi
+
+        # Add a way to select the name
+        FULL_NAME="$(ls $SRC_BACK | grep -e "$1")"
+
+        NUMBER_MATCHES=$(ls $SRC_BACK | grep -e "$1" | wc -l)
+
+        if [ $NUMBER_MATCHES -ne 1 ]; then
+                POSITION=1
+                for i in $FULL_NAME
+                do
+                        echo "($POSITION) $i"
+                        ((POSITION+=1))
+                done
+
+                read -p "enter position " row
+                FULL_NAME="$(ls $SRC_BACK | grep -e "$1" | head -n $row | tail  -n 1)"
+        fi
+
+        SRC="$SRC_BACK/$FULL_NAME"
+        DEST="$(pwd)"
+
+        if [ $# -eq 2 ]; then
+                DEST="$2"
+        fi
+
+        tar -xf $SRC --directory $DEST
+
+
+  ```
