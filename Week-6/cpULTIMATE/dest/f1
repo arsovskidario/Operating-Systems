@@ -1,0 +1,19 @@
+stroeks
+ario
+be
+brat
+:wq
+
+#include<stdio.h>
+#include<stdlib.h>
+#include <err.h>
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <fcntl.h>
+#include <unistd.h>
+
+int main(int argc, char* argv[])
+{
+        exit(0);
+}
+
