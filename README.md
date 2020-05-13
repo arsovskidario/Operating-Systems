@@ -555,6 +555,51 @@ tar -czvf arhiva.tr b* # add all files that start with the letter b to the arhiv
    - **RANDOM**
    -  $(( (RANDOM % b) + a  ))
 
+**C Linux** 
+- 
+- # Open 
+- 
+- Opens a file based on the given path and returns a file descriptor or -1 if it failed.
+- int open(const char *pathname, int flags);
+- int open(const char *pathname, int flags, mode_t mode);
+- *flags* must be specified (O_RDONLY, O_WRONLY, O_RDWR)
+- O_CREAT (create a file if it doesn't exist)
+- O_TRUNC (overwrites the file that will be opened)
+- O_APPEND (when write() lseek() is position to EOF and you write to EOF)
+- *mode* is specified when using O_CREAT flag for creating a new file 
+- S_IRWXU  00700 user (file owner) has read,  write,  and  execute permission
+- S_IRUSR  00400 user has read permission
+- S_IWUSR  00200 user has write permission
+- 
+- # Read
+- 
+- ssize_t read(int fd, void *buf, size_t count);
+- read()  attempts to read up to *count* bytes from *file descriptor* fd *into the buffer* starting at buf.
+
+- read starts from the file offset made by lseek
+- if file seek is at or past EOF no bytes are read and 0 is returned
+- on success read the number of bytes read is returned and file is seeked by that ammount 
+- can read even smaller than the *count* given (if the file has less bytes to read)
+- 
+- # Write
+- 
+- ssize_t write(int fd, const void *buf, size_t count);
+- write() writes up to *count* bytes *from the buffer** starting at buf to the file referred to by the *file descriptor* fd.
+- The number of bytes written may be less than  count  if,  for  example, there  is  insufficient space on the underlying physical medium
+- writing takes place where the last lseek was placed if O_APPEND it will always be the EOF.
+- can read even smaller than the *count* given (if the file has less bytes space to write)
+- return number of bytes that were written 
+- 
+- # Close
+- 
+- int close(int fd);
+- closes a file descriptor so it doesn't refer to a file and can be reused
+- the lseek is reset on the file 
+- return 0 on success and -1 on failure to close 
+
+- # errno
+- variable keeps the last function return value 
+
 **EXERCISES**
 -  
 - **[3.Обработка на текст](https://github.com/arsovskidario/Operating-Systems/blob/master/Exercises/3.%D0%9E%D0%B1%D1%80%D0%B0%D0%B1%D0%BE%D1%82%D0%BA%D0%B0%20%D0%BD%D0%B0%20%D1%82%D0%B5%D0%BA%D1%81%D1%82.md)**
