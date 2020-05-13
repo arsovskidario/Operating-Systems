@@ -571,7 +571,7 @@ tar -czvf arhiva.tr b* # add all files that start with the letter b to the arhiv
 - S_IRUSR  00400 user has read permission
 - S_IWUSR  00200 user has write permission
 - 
-- # Read
+# Read
 - 
 - ssize_t read(int fd, void *buf, size_t count);
 - read()  attempts to read up to *count* bytes from *file descriptor* fd *into the buffer* starting at buf.
@@ -581,7 +581,7 @@ tar -czvf arhiva.tr b* # add all files that start with the letter b to the arhiv
 - on success read the number of bytes read is returned and file is seeked by that ammount 
 - can read even smaller than the *count* given (if the file has less bytes to read)
 - 
-- # Write
+# Write
 - 
 - ssize_t write(int fd, const void *buf, size_t count);
 - write() writes up to *count* bytes *from the buffer** starting at buf to the file referred to by the *file descriptor* fd.
@@ -590,14 +590,14 @@ tar -czvf arhiva.tr b* # add all files that start with the letter b to the arhiv
 - can read even smaller than the *count* given (if the file has less bytes space to write)
 - return number of bytes that were written 
 - 
-- # Close
+# Close
 - 
 - int close(int fd);
 - closes a file descriptor so it doesn't refer to a file and can be reused
 - the lseek is reset on the file 
 - return 0 on success and -1 on failure to close 
 
-- # errno
+# errno
 - variable keeps the last function return value 
 
 **EXERCISES**
