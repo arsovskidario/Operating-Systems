@@ -556,7 +556,7 @@ tar -czvf arhiva.tr b* # add all files that start with the letter b to the arhiv
    -  $(( (RANDOM % b) + a  ))
 
 # C Linux
-- 
+
 **Open**
 - 
 - Opens a file based on the given path and returns a file descriptor or -1 if it failed.
@@ -570,7 +570,7 @@ tar -czvf arhiva.tr b* # add all files that start with the letter b to the arhiv
 - S_IRWXU  00700 user (file owner) has read,  write,  and  execute permission
 - S_IRUSR  00400 user has read permission
 - S_IWUSR  00200 user has write permission
-- 
+
 **Read**
 - 
 - ssize_t read(int fd, void *buf, size_t count);
@@ -580,7 +580,7 @@ tar -czvf arhiva.tr b* # add all files that start with the letter b to the arhiv
 - if file seek is at or past EOF no bytes are read and 0 is returned
 - on success read the number of bytes read is returned and file is seeked by that ammount 
 - can read even smaller than the *count* given (if the file has less bytes to read)
-- 
+
 **Write**
 - 
 - ssize_t write(int fd, const void *buf, size_t count);
@@ -589,7 +589,7 @@ tar -czvf arhiva.tr b* # add all files that start with the letter b to the arhiv
 - writing takes place where the last lseek was placed if O_APPEND it will always be the EOF.
 - can read even smaller than the *count* given (if the file has less bytes space to write)
 - return number of bytes that were written 
-- 
+
 **Close**
 - 
 - int close(int fd);
@@ -598,7 +598,64 @@ tar -czvf arhiva.tr b* # add all files that start with the letter b to the arhiv
 - return 0 on success and -1 on failure to close 
 
 **errno**
+- 
 - variable keeps the last function return value 
+
+**lseek**
+-  
+- lseek(int fd, off_t offset, int whence);
+- repositions *file descriptor* to the *offset* according to *whence*
+- whence :
+- SEEK_SET - sets fd to offset bytes
+- SEEK_CUR - current fd offset location plus offset in bytes
+- SEEK_END - end of file offset plus offset bytes 
+
+**stat**
+- 
+-  int stat(const char *pathname, struct stat *statbuf); -> full path name
+-  int fstat(int fd, struct stat *statbuf); -> file descriptor
+-  int lstat(const char *pathname, struct stat *statbuf); -> symbolic link is pathname and return info about the link itself 
+
+- stat return information about file in the buffer *statbuf* (object of struct stat)
+```c
+    struct stat {
+               dev_t     st_dev;         /* ID of device containing file */
+               ino_t     st_ino;         /* Inode number */
+               mode_t    st_mode;        /* File type and mode */
+               nlink_t   st_nlink;       /* Number of hard links */
+               uid_t     st_uid;         /* User ID of owner */
+               gid_t     st_gid;         /* Group ID of owner */
+               dev_t     st_rdev;        /* Device ID (if special file) */
+               off_t     st_size;        /* Total size, in bytes */
+               blksize_t st_blksize;     /* Block size for filesystem I/O */
+               blkcnt_t  st_blocks;      /* Number of 512B blocks allocated */
+
+               /* Since Linux 2.6, the kernel supports nanosecond
+                  precision for the following timestamp fields.
+                  For the details before Linux 2.6, see NOTES. */
+
+               struct timespec st_atim;  /* Time of last access */
+               struct timespec st_mtim;  /* Time of last modification */
+               struct timespec st_ctim;  /* Time of last status change */
+
+           #define st_atime st_atim.tv_sec      /* Backward compatibility */
+           #define st_mtime st_mtim.tv_sec
+           #define st_ctime st_ctim.tv_sec
+           };
+
+   ```
+   - returns 0 if stat is succesful, and -1 if it failed
+   ```c
+      // Check if stat was succesfull
+      char* fd; // assume it is opened
+      struct stat file;
+      if ( stat(fd,&file) == -1 ){
+         close(fd);
+         errx(1,"Couldn't stat file ");
+      }
+       
+   ```
+
 
 **EXERCISES**
 -  
