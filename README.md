@@ -656,8 +656,35 @@ tar -czvf arhiva.tr b* # add all files that start with the letter b to the arhiv
        
    ```
 
+   **Void array**
+   - 
+   - you can appoint any type to it and then cast it back to that type 
+  ```c
+	// Casting void array elements to u_int32_t 
+	int cmp(const void* a, const void* b){
+		u_int32_t x = *((u_int32_t*)a);
+	        u_int32_t y = *((u_int32_t*)b);
+
+        	if(x>y)
+                	return 1;
+        	else if (x<y)
+               	 return -1;
+
+	        return 0;
+	}	
+
+	int main(){
+		int elements =5;
+		void* x = malloc(elements * sizeof(u_int32_t));
+		qsort(x,elements,sizeof(u_int32_t),cmp);
+	}
+	
+  ```
+
 
 **EXERCISES**
 -  
 - **[3.Обработка на текст](https://github.com/arsovskidario/Operating-Systems/blob/master/Exercises/3.%D0%9E%D0%B1%D1%80%D0%B0%D0%B1%D0%BE%D1%82%D0%BA%D0%B0%20%D0%BD%D0%B0%20%D1%82%D0%B5%D0%BA%D1%81%D1%82.md)**
 - **[4.Процеси](https://github.com/arsovskidario/Operating-Systems/blob/master/Exercises/problems-04-solutions.md)**
+- **[5.Shell Scripts](https://github.com/arsovskidario/Operating-Systems/blob/master/Exercises/problems-05-solutions.md)**
+- **[6.C Kernel Functions](https://github.com/arsovskidario/Operating-Systems/tree/master/Week-7/ExamPrep_C)**
