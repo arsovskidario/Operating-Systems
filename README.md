@@ -1,7 +1,6 @@
 
 **Summary based on practical lectures**
-
--
+- 
 
   
   
@@ -100,8 +99,7 @@ tar -czvf arhiva.tr b* # add all files that start with the letter b to the arhiv
   
 
 **File**
-
--
+- 
 
 - displays short description of file
 
@@ -174,8 +172,7 @@ ls -la | grep -Pv "(Wallpapers)"  | egrep -o "Screenshot.*"  | xargs -I {} rm {}
   
 
 **Grep**
-
--
+- 
 
 - work inside of the file
 
@@ -251,8 +248,7 @@ cat allJaneEmails.txt | sort | awk 'BEGIN { "print \$1" > "allJaneEmails.txt"}'
   
 
 **FIND**
-
--
+- 
 
 - scan through directory for a file or dir that fits a specific criteria
 
@@ -390,8 +386,7 @@ find / -printf '%T@ %p \n'  2>/dev/null | tail -n 1 # grab name of last created 
   
 
 **TR**
-
--
+- 
 
 - translate or delete characters
 
@@ -424,8 +419,7 @@ tr -s "a"
   
 
 **Sort**
-
--
+- 
 
 - can use file as input
 
@@ -655,8 +649,7 @@ use |& to pass even the stderr through the pipe
   
 
 **AWK**
-
--
+- 
 
 - Reads/Processes only one line at a time .
 
@@ -892,7 +885,7 @@ echo  "hell"
   
 
 **JOBS**
--
+- 
 
 - lists your own processes
 
@@ -1580,8 +1573,6 @@ dup2(f,1); // if the fd is already in use it will silently close it
 // here f is equl to stdout
 
 ```
-
-  
   
 
 **EXERCISES**
