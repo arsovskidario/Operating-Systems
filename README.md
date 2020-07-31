@@ -1297,8 +1297,9 @@ qsort(x,elements,sizeof(u_int32_t),cmp);
 - int execl(const char *path, const char *arg0, ... /*, (char *)0 */);
 
 - path = path to command/executable , arg0 = executable name, arg[1]..= parameters of executable, NULL = terminate list of arguments (arg[1],arg[2]..etc)
-
-- execl replaces the current process image with a new process image.
+- *(char *)NULL* list of arguments must be terminated by it.
+- **execl replaces the current process image with a new process image.**
+- replaces the curent runnig program with a new one.  (basically the pice of code that is left is overriden)
 
 - process iamge = executable program stored on the disk.
 
@@ -1309,6 +1310,45 @@ qsort(x,elements,sizeof(u_int32_t),cmp);
 - int execlp(const char *file, const char *arg, ... /* (char *) NULL */);
 
 - execlp takes name of command and searches $PATH for it.
+
+
+- **[Execl vs Fork](https://stackoverflow.com/a/4205020/11054284)**
+
+```c
+    // Basically execl opens a different process and executes it to the full degree
+    // if it can't execute a cmd / doesnt enter a new process  -1 is returned
+
+    if ( excel("ls","ls","-l") == -1) {
+            err(1,"Couldn't execute cmd !");
+    }
+
+    printf("Print me!"); // Wont be printed because the current process is swaped with the ls process image 
+    // ne se navagja vishe u ovj proces nego u swaped process e
+
+    int childPid;
+    int forkId= fork();
+    if (forkId == 0){
+        wait(NULL); // wait for child to finish
+    }
+    else {
+        
+         childPid = getpid();
+         if ( excel("ls","ls","-l") == -1) {
+            err(1,"Couldn't execute cmd !");
+    }
+
+    printf("Command was executed by %d",childPid); // Wont work
+    // Because the child doesn't use the parents childPid variable, but it's own copy...
+    // Output from printf is line buffered. Basically /n flushes the buffer or fflush() if you do it manually. 
+    }
+
+    Pro tip: 
+        // Use \n with fork processes because of buffer issues when flushing stdout 
+        printf("Print \n"); // will flush buffer and print to screen
+
+
+
+```
 
   
 
