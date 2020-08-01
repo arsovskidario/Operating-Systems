@@ -1,3 +1,4 @@
+
 # Summary based on practical lectures
 
   
@@ -106,7 +107,7 @@ stat <file_name>
 - atime (access time) = time when the file was opened /touched
 - mtime(modified time) =  in the file is changed when me save file, add new stuff in it (Change the data part of the file ).
 - ctime (change time) = when the name part of the file is changed (meta data)
-- when mtime is changed the ctime is changed too.  
+- when mtime is changed the ctime is changed too (because if we add more bytes to the file by writing more to it or deleting something its size increases/decreases affecting the inode).  
 - if we only change the Inode or the metadata in the Inode then we only change the ctime and **not the mtime** 
 - **chmod changes only the ctime of the file**
 
@@ -129,6 +130,8 @@ file Week-1/ # directory
 **Binary files**
 
 - display raw binary data from file (translates all the text in file to hex code)
+
+## Wildcards
 
 
 **XXD**
@@ -197,10 +200,10 @@ touch file2.txt file3.txt # Create fle2.txt and file3.txt
 ```bash
 cp item1 item2 ... itemN dest # copies multiple files to dest directory
 ```
-Options:
--i = prompt before overwriting file 
--u = update old files and don't copy already existing ones
--v = display informative message as the cmd is executed 
+- Options:
+-- -i = prompt before overwriting file 
+-- -u = update old files and don't copy already existing ones
+-- -v = display informative message as the cmd is executed 
 ```bash
 cp -i item1 dest # Prompts if you want to overwrite file with same name 
 cp -u *.html destination # Copy all HTML files that are newer or missing to DEST file 
@@ -221,17 +224,20 @@ mv dir1 dir2 # If dir2 doesn't exist rename dir1 to dir2, if it exists move dir1
 mkdir f1 f2 f3  # Create 3 dir f1 f2 and f3
 mkdir f4 
 mkdir -p a/b/c/d # Will created 4 directories a,b,c,d starting with a on top of the hierarchy
+mkdir -p foo/bar 
+# -- foo
+#     -- bar
 ```
 **RM**
 -
 - remove file or directory
-- can have multiple arguments
-Options:
--r = recursively delete directories, if directory being deleted has subdirectories delete them too 
--i =prompt message before deleting file
-**-f** = force remove. Ignore prompt message and non-existent files. This will overwrite the -i option
--v = verbose message ( Information about what the command will be doing )
-**Pro Tip: rm with wildcards is dangerous because there is no undelete cmd, so use *ls* with the *wildcards* you are planning to use in the rm in order to see if the wildcards are working as you want**
+- can have multiple arguments 
+- Options:
+ -- -r = recursively delete directories, if directory being deleted has subdirectories delete them too 
+-- -i =prompt message before deleting file
+-- **-f** = force remove. Ignore prompt message and non-existent files. This will overwrite the -i option
+-- -v = verbose message ( Information about what the command will be doing )
+- **Pro Tip: rm with wildcards is dangerous because there is no undelete cmd, so use *ls* with the *wildcards* you are planning to use in the rm in order to see if the wildcards are working as you want**
 
 
 **XARGS**
@@ -268,7 +274,19 @@ ls -la | grep -Pv "(Wallpapers)"  | egrep -o "Screenshot.*"  | xargs -I {} rm {}
 ```
 
 ### Permissions 
-Sticky bit = t in the end of the permission means that the file has root access
+- each file is owned by a specific UID(user id) and GID(group id)
+- **chown** change UID  of file ( only by root)
+- **chgrp** change GID of file 
+- UID and GID is given to a file based on the person that has created it 
+- r - 4 - Read
+- w -2 - Write
+- x - 1 - Execute
+- **chmod** permission file_path 
+-  permission = 0755(rwxr-xr-x), 0644 (rw-r--r--)
+- Sticky bit = t in the end of the permission means that the file has root access
+- *default permission* = 0666(files), 0777(directories)
+-  **umask** mask set to change the default permission 022 by default ( remove write permission of group and others )
+- 
 ```bash
 # File Permission :
 -rw-r--r-- 1
@@ -293,7 +311,8 @@ dario - group
 snap - name of file/directory
 ```
 
-## Text maniplation
+
+## Text manipulation
   
 
 **Grep**
