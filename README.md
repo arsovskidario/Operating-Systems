@@ -133,6 +133,8 @@ file Week-1/ # directory
 
 ## Wildcards
 
+![Wildcards](https://github.com/arsovskidario/Operating-Systems/blob/master/images/Wildcards.png?raw=true)
+![wildcards-example](https://github.com/arsovskidario/Operating-Systems/blob/master/images/Wildcards-example.png?raw=true)
 
 **XXD**
 - 
