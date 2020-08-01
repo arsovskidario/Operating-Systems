@@ -1,32 +1,100 @@
-
-**Summary based on practical lectures**
-- 
+# Summary based on practical lectures
 
   
-  
+## File management and manipulation   🗄️
 
-**Inode** is a special key that has in itself GID,SID,time of change,size of file and other metadata
+- file system is organized as a *hierarchical tree structure*
+- at the top of the hierarchy is the **root** directory
 
-it is useful for identifying a file
-
-Files have to identificatiors the Inode and the Name of the file
-
-  
-  
-
-**Hard Link** is a pointer to a directory with the same Inode as the directory it is pointing to
-
-In order to totally remove the file every hard link must be deleted. ( Basically every hard link acts like a original of the file it is linked to )
-
-  
-
-```shell
-
-ln src dest # src file you want to link to dest = destination of shortcut
+```bash
+# / = root
+# /bin = binaries/programs  for system boot and run
+# /boot = boot loader
+# /dev = devices/nodes that mount to the system
+# /etc = scripts for commands and config files
+# /home = directory file for user
+# /root = home directory for root
+# /tmp = for storage of temporary files used by programs, is wiped when system is rebooted
+# /usr = programs and support fiels for user
+# /usr/bin = holds executable programs installed by Linux
+# /usr/local = programms not installed by Linux  distro, but are used
+# /var = where data is likely to change ( databases, emails, snap )
 
 ```
 
-  
+
+### File 
+- has two parts 
+- *data part* = file contents (text inside)
+- *name part* = files name 
+-  Files have two identifiers the **Inode** and the **Name of the file**
+- *Hard links* create additional name parts that refer to the same data part
+
+### Inode
+- block of information 
+- is a special key that has in itself GID, SID, time of change, size of file and other metadata
+- is useful for identifying a file
+
+```bash
+ls -i  # show inode 
+
+# Example 
+
+ls -li regular
+# Result
+# 6422698 -rw-rw-r-- 1 dario dario 0 юли 31 18:58 regular
+# 6422698 is the INODE 
+```  
+
+### Hard Link
+-  is a pointer to a directory with the **same Inode** as the directory it is pointing to
+- can't reference files outside its own file system/ can't reference a file out of its own disk partition
+- it may not reference a directory
+- in order to totally remove the file every hard link must be deleted. ( Basically every hard link acts like a original of the file it is linked to )
+```bash
+ln src dest # src is file you wish to link and dest is the hard link 
+
+# Example 
+
+ln dario darko1 
+ln dario darko2 
+ln dario darko3
+
+ls -lia 
+
+# Result : 
+6424755 -rw-rw-r-- 4 dario dario    0 авг  1 19:52 darko1
+6424755 -rw-rw-r-- 4 dario dario    0 авг  1 19:52 darko2
+6424755 -rw-rw-r-- 4 dario dario    0 авг  1 19:52 darko3
+# Number before @user signifies number of Links that reference the original file 
+# All of the links have the same INODE 
+```
+
+### Symbolic links
+- work as windows  shortcuts. 
+- they have **different Inodes** than the file they redirect to.
+- if we write something to the symbolic link, the original file is written too
+- when we delete a sym link the link is only deleted and not the file itself
+- if file is delete the symlink points to **null** ( is considered broken)
+- can reference directories
+- can span physical devices
+- size of sym links is the number of characters in the name of the referenced file  and not the size of the refferenced file
+- rm  works only on the symlink and not the referenced file
+```bash
+
+ln -s src dest # soft link to src with name dest
+
+# Example 
+# Symbolic links :
+
+ln -s libc-2.6.so libc.so.6 
+ls -la 
+
+# Result : 
+1243 lrwxrwxrwx 1 root root 11 2007-08-11 07:34 libc.so.6 -> libc-2.6.so
+# First char *l*, means symbolic link
+# Has different Inode than the original file 
+```
 
 To see more detail about file ( example . Inode , size , atime ,ctime mtime )
 
@@ -35,75 +103,18 @@ To see more detail about file ( example . Inode , size , atime ,ctime mtime )
 stat <file_name>
 
 ```
+- atime (access time) = time when the file was opened /touched
+- mtime(modified time) =  in the file is changed when me save file, add new stuff in it (Change the data part of the file ).
+- ctime (change time) = when the name part of the file is changed (meta data)
+- when mtime is changed the ctime is changed too.  
+- if we only change the Inode or the metadata in the Inode then we only change the ctime and **not the mtime** 
+- **chmod changes only the ctime of the file**
 
-  
 
-The mtime in the file is changed when me save file, add new stuff in it.
-
-When mtime is changed the ctime is changed too.
-
-  
-
-If we only change the Inode or the metadata in the Inode then we only change the ctime and not the mtime .
-
-Example. chmod changes only the ctime of the file
-
-  
-
-```shell
-
-ls -i shows the inode numbers
-
-df -h shows the size of files
-
-```
-
-  
-
-Acces time is when you open the file
-
-  
-  
-
-**Soft links** work as shortcuts. They have different Inodes than the file they redirect to.
-
-If you delete the original file the soft link won't be deleted.
-
-  
-
-```shell
-
-ln -s src dest # soft link
-
-```
-
-  
-
-Sticky bit = t in the end of the permission means that the file has root access
-
-  
-
-To be root :
-
-```shell
-
-sudo su root
-
-```
-
-  
-
-tar -czvf arhiva.tr b* # add all files that start with the letter b to the arhiva.tr
-
-  
-  
-
-**File**
-- 
-
+### File
 - displays short description of file
 
-```shell
+```bash
 
 file README.md # UTF-8
 
@@ -119,14 +130,12 @@ file Week-1/ # directory
 
 - display raw binary data from file (translates all the text in file to hex code)
 
--  **xxd**
 
+**XXD**
+- 
 - make a hexdump or do the reverse.
-
-- example;
-
-```shell
-
+```bash
+# Example  
 echo D > hexCode.txt
 
 xxd hexCode.txt
@@ -134,12 +143,103 @@ xxd hexCode.txt
 * Will display : 00000000:2020 44 # 00000000:shows the number of line , 20 is space in hex ascii table , 44 is D in hex ascii table
 
 ```
+**PWD**
+- 
+- print working directory / current directory we are in
 
--  **xargs**
+**CD**
+- 
+- change current directory
+- cd -  = changes the working directory to the previous working directory
+
+**LS**
+- 
+- list directory contents
+-  can take multiple arguments 
+```bash
+ls ~ ~/Development
+# Result : 
+/home/dario:
+Books    Development  Downloads  Pictures  snap       Videos
+Desktop  Documents    Music      Public    Templates
+/home/dario/Development
+Operating-Systems
+```
+ options :
+	-  t =  sort by modification time (mtime)
+	-  r  --reverse = display in reverse order 
+	-  h = human readable, displays file size in human readable format rather than bytes
+	-  S = sort results by file size 
+	- i = show inode of file 
+```bash
+ls -t 
+ls -r || ls --reverse
+ls -h 
+ls -S
+ls - i # Show inode 
+```
+**TOUCH**
+- 
+-  change file timestamps
+- Update  the  access  and modification times of each FILE to the current time.
+```bash
+touch file1 # Create file1
+touch -a file1 # change atime
+touch -m file1 # change mtime 
+touch file2.txt file3.txt # Create fle2.txt and file3.txt
+```
+
+
+**CP**
+- 
+- copy file and directories to destination file/directory 
+- can copy multiple files to dest file 
+```bash
+cp item1 item2 ... itemN dest # copies multiple files to dest directory
+```
+Options:
+-i = prompt before overwriting file 
+-u = update old files and don't copy already existing ones
+-v = display informative message as the cmd is executed 
+```bash
+cp -i item1 dest # Prompts if you want to overwrite file with same name 
+cp -u *.html destination # Copy all HTML files that are newer or missing to DEST file 
+```
+**MV**
+- 
+- move or rename
+- move files/directories or rename if the  file doesn't exist
+```bash
+mv dir1 dir2 # If dir2 doesn't exist rename dir1 to dir2, if it exists move dir1 inside dir2
+```
+**MKDIR**
+- 
+- make directory 
+-  can have multiple arguments
+- -p make directory with parents
+```bash
+mkdir f1 f2 f3  # Create 3 dir f1 f2 and f3
+mkdir f4 
+mkdir -p a/b/c/d # Will created 4 directories a,b,c,d starting with a on top of the hierarchy
+```
+**RM**
+-
+- remove file or directory
+- can have multiple arguments
+Options:
+-r = recursively delete directories, if directory being deleted has subdirectories delete them too 
+-i =prompt message before deleting file
+**-f** = force remove. Ignore prompt message and non-existent files. This will overwrite the -i option
+-v = verbose message ( Information about what the command will be doing )
+**Pro Tip: rm with wildcards is dangerous because there is no undelete cmd, so use *ls* with the *wildcards* you are planning to use in the rm in order to see if the wildcards are working as you want**
+
+
+**XARGS**
+-
 
 - use input with a cmd that doesnt normaly use stdin (it uses parametars only)
 
-```shell
+```bash
 
 find / -name "*.pdf"  | xargs rm # find all pdf files and remove them
 
@@ -149,9 +249,9 @@ find / -name "*.pdf"  | xargs rm # find all pdf files and remove them
 
 - by default xargs will get all the input and apply the command only one time on that input
 
-- n 1 will make it apply on every newline (operate one by one )
+- -n 1 will make it apply on every newline (operate one by one )
 
-```shell
+```bash
 
 users | xargs echo  "Hello,"  # will print only one Hello,
 
@@ -163,12 +263,37 @@ users | xargs echo -n 1 "Hello,"  #will print Hello, for every user
 
 - -null items are terminated by null character instead of whitespace
 
-```shell
-
+```bash
 ls -la | grep -Pv "(Wallpapers)"  | egrep -o "Screenshot.*"  | xargs -I {} rm {}
-
 ```
 
+### Permissions 
+Sticky bit = t in the end of the permission means that the file has root access
+```bash
+# File Permission :
+-rw-r--r-- 1
+
+- first dash means file / can have d for dir or l for symlink
+- 3 dashes = file owner
+- 3 dashes = group
+- 3 final dashes = for everyone
+- 1 Means number of hard links
+
+drwxr-xr-x 7 dario dario 4096 юли 31 19:32 snap
+
+d - directory
+rwx - read write execute for owner
+r-x - read execute for group
+r-x - read and execute for everyone
+7 - 7 hard links
+dario - user
+dario - group
+4096 - size in bytes
+юли 31 19:32 - date
+snap - name of file/directory
+```
+
+## Text maniplation
   
 
 **Grep**
@@ -951,6 +1076,8 @@ kill -SIGKILL <pid>
 -  **unset** unset a shell variable.
 
 - by convention variables should be name with UPPERCASE.
+
+- which <cmd> = shows directory of command
 
 -  **Creating scripts**
 
