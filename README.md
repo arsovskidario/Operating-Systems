@@ -285,8 +285,10 @@ ls -la | grep -Pv "(Wallpapers)"  | egrep -o "Screenshot.*"  | xargs -I {} rm {}
 - r - 4 - Read
 - w -2 - Write
 - x - 1 - Execute
+![permissions](https://github.com/arsovskidario/Operating-Systems/blob/master/images/permissions.png?raw=true)
 - **l symlink has dummy permissions and not the actual of the file it is referencing**
 - **chmod** permission file_path 
+![chmodperm](https://github.com/arsovskidario/Operating-Systems/blob/master/images/chmod_permissions.png?raw=true)
 -  permission = 0755(rwxr-xr-x), 0644 (rw-r--r--)
 - Sticky bit = t in the end of the permission means that the file has root access
 - *default permission* = 0666(files), 0777(directories)
