@@ -16,7 +16,7 @@
 # /home = directory file for user
 # /root = home directory for root
 # /tmp = for storage of temporary files used by programs, is wiped when system is rebooted
-# /usr = programs and support fiels for user
+# /usr = programs and support files for user
 # /usr/bin = holds executable programs installed by Linux
 # /usr/local = programms not installed by Linux  distro, but are used
 # /var = where data is likely to change ( databases, emails, snap )
@@ -170,18 +170,20 @@ Desktop  Documents    Music      Public    Templates
 /home/dario/Development
 Operating-Systems
 ```
- options :
-	-  t =  sort by modification time (mtime)
-	-  r  --reverse = display in reverse order 
-	-  h = human readable, displays file size in human readable format rather than bytes
-	-  S = sort results by file size 
-	- i = show inode of file 
+- options :
+	--  t =  sort by modification time (mtime)
+	--  r  --reverse = display in reverse order 
+	--  h = human readable, displays file size in human readable format rather than bytes
+	--  S = sort results by file size 
+	--  i = show inode of file 
+	--  A = show almost all 
 ```bash
-ls -t 
+ls -t # by modification time, newest first
 ls -r || ls --reverse
 ls -h 
-ls -S
+ls -S # sorted by size
 ls - i # Show inode 
+ls -A # show all files without . and .. 
 ```
 **TOUCH**
 - 
@@ -203,9 +205,9 @@ touch file2.txt file3.txt # Create fle2.txt and file3.txt
 cp item1 item2 ... itemN dest # copies multiple files to dest directory
 ```
 - Options:
--- -i = prompt before overwriting file 
--- -u = update old files and don't copy already existing ones
--- -v = display informative message as the cmd is executed 
+	-- -i = prompt before overwriting file 
+	-- -u = update old files and don't copy already existing ones
+	-- -v = display informative message as the cmd is executed 
 ```bash
 cp -i item1 dest # Prompts if you want to overwrite file with same name 
 cp -u *.html destination # Copy all HTML files that are newer or missing to DEST file 
@@ -235,10 +237,10 @@ mkdir -p foo/bar
 - remove file or directory
 - can have multiple arguments 
 - Options:
- -- -r = recursively delete directories, if directory being deleted has subdirectories delete them too 
--- -i =prompt message before deleting file
--- **-f** = force remove. Ignore prompt message and non-existent files. This will overwrite the -i option
--- -v = verbose message ( Information about what the command will be doing )
+	-- -r = recursively delete directories, if directory being deleted has subdirectories delete them too 
+	-- -i =prompt message before deleting file
+	-- **-f** = force remove. Ignore prompt message and non-existent files. This will overwrite the -i option
+	-- -v = verbose message ( Information about what the command will be doing )
 - **Pro Tip: rm with wildcards is dangerous because there is no undelete cmd, so use *ls* with the *wildcards* you are planning to use in the rm in order to see if the wildcards are working as you want**
 
 
@@ -257,7 +259,7 @@ find / -name "*.pdf"  | xargs rm # find all pdf files and remove them
 
 - by default xargs will get all the input and apply the command only one time on that input
 
-- -n 1 will make it apply on every newline (operate one by one )
+- **-n 1 will make it apply on every newline (operate one by one )**
 
 ```bash
 
@@ -283,12 +285,15 @@ ls -la | grep -Pv "(Wallpapers)"  | egrep -o "Screenshot.*"  | xargs -I {} rm {}
 - r - 4 - Read
 - w -2 - Write
 - x - 1 - Execute
+- **l symlink has dummy permissions and not the actual of the file it is referencing**
 - **chmod** permission file_path 
 -  permission = 0755(rwxr-xr-x), 0644 (rw-r--r--)
 - Sticky bit = t in the end of the permission means that the file has root access
 - *default permission* = 0666(files), 0777(directories)
--  **umask** mask set to change the default permission 022 by default ( remove write permission of group and others )
-- 
+-  **umask** mask set to change the default permission 0002 OR 0022 by default ( remove write permission of group and others )
+- **userdadd**
+- **groupadd**
+
 ```bash
 # File Permission :
 -rw-r--r-- 1
