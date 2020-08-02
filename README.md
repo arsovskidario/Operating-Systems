@@ -277,7 +277,7 @@ users | xargs echo -n 1 "Hello,"  #will print Hello, for every user
 ls -la | grep -Pv "(Wallpapers)"  | egrep -o "Screenshot.*"  | xargs -I {} rm {}
 ```
 
-### Permissions 
+### Permissions 🔑
 - each file is owned by a specific UID(user id) and GID(group id)
 - **chown** change UID  of file ( only by root)
 - **chgrp** change GID of file 
@@ -319,6 +319,72 @@ dario - group
 юли 31 19:32 - date
 snap - name of file/directory
 ```
+
+  
+
+
+## Redirection and Pipelines  🚰
+
+- redirections are used to send from command to file
+```bash
+> send STDOUT to different file overwriting it 
+>> append STDOUT to file
+# If file doesn't exist it is created
+<
+<<
+cat foo > bar # If bar doesn't exist it is created else it is overwriten with content from foo
+# STDIN, STDOUT, STDERR are file descriptors in Linux, because everything is a file 
+Filedescriptors : STDIN =0, STDOUT=1, STDERR=2
+
+cat foo 1> bar # same as cat foo > bar
+
+#STDOUT, STDERR are printed to the screen by default
+#STDIN takes input from the keyboard by default 
+
+2> send STDERR to file overwriting it 
+2>> send STDERR to file appending it to the end
+
+ls -la foo > result.log 2>&1 # Redirect stdout and stderr to result.log
+ls -la foo &> result.log # Same as above, just more modern 
+ls -la foo >> result.log 2>&1 # Append instead of overwriting 
+
+2>&1 # STDERR converted to STDOUT
+2>&0 # STDERR converted to STDIN 
+
+# Sending to bit bucket( /dev/null)
+ls -la foo > result.log 2>/dev/null
+
+```
+
+  ### Things to avoid
+```bash
+tr a-z A-Z <test1 > test1 # test1 will be blank in the end
+```
+
+  
+
+*[Stack overflow answer](https://stackoverflow.com/questions/6696842/how-can-i-use-a-file-in-a-command-and-redirect-output-to-the-same-file-without-t)*
+
+  
+
+> *You can't use redirection operator (> or >>) to the same file, because it has a higher precedence and it will create/truncate the file before the command is even invoked. To avoid that, you should use appropriate tools such as tee, sponge, sed -i or any other tool which can write results to the file (e.g. sort file -o file)*.
+
+  
+
+*[Pipeline](https://en.wikipedia.org/wiki/Pipeline_(Unix))*
+
+  
+
+- Pipelines pass STDOUT from one process to STDIN in the chained process.
+-  <ins>***EXCLUSIVELY*** </ins>  used for *commands*
+```bash
+command1 | command2
+find . -name ".pdf" 2>/dev/null | grep -w "dario"
+```
+
+> **By default *STDERR* is not passed through the pipe**
+
+- **use |& to pass even the stderr through the pipe**
 
 
 ## Text manipulation
@@ -383,7 +449,7 @@ ex. if grep -r "darko" foo =>and foo is a sym link it will follow it
 
 Some examples of the grep command in use :
 
-```shell
+```bash
 
 grep -P -A 4 "^Jane" data.txt | grep -P "[a-zA-Z0-9\-\_\.]+@[a-zA-Z0-9\_]+.[a-zA-Z0-9]+"
 
@@ -411,7 +477,7 @@ cat allJaneEmails.txt | sort | awk 'BEGIN { "print \$1" > "allJaneEmails.txt"}'
 
 exampls:
 
-```shell
+```bash
 
 find . -name "darko.txt"
 
@@ -435,7 +501,7 @@ find . -name "*.pdf"  # every pdf file
 
 - -executable for executable files
 
-```shell
+```bash
 
 find ./ -perm -g=w # will take all the fiels that have write perm on group
 
@@ -451,7 +517,7 @@ find / -perm -0777 # find all fies that have rwxrwxrwx permission
 
 - -mtime,atime,ctime +/- <number> same as min but for days <number>*24 hours
 
-```shell
+```bash
 
 find dest -ctime -60 # change time
 
@@ -465,7 +531,7 @@ find dest -ctime -60 # change time
 
 *(prefered to be in front of the options )*
 
-```shell
+```bash
 
 find / -maxdepth 1 -type f -name "dario"  # will look only in the curr directory
 
@@ -475,7 +541,7 @@ find / -maxdepth 2 -type f -name "dariO"# will look in subdirectories too
 
 - -anewer <file_name> # find files that are newer then give file
 
-```shell
+```bash
 
 find -anewer file -exec rm {} \;  # remove files that are newer than given file
 
@@ -527,7 +593,7 @@ k, which is the same as for %A.
 
 *k = @,H(hour),M(min),S(sec),Z(timezone),D(mm/dd/yy)*
 
-```shell
+```bash
 
 find / -printf '%T@ %p \n'  #list all files and seconds from 1970 ,Starting from oldest to newest
 
@@ -547,7 +613,7 @@ find / -printf '%T@ %p \n'  2>/dev/null | tail -n 1 # grab name of last created 
 
   
 
-```shell
+```bash
 
 tr a-z A-Z # will translate every lower case letter to UPPER CASE LETTER
 
@@ -561,7 +627,7 @@ tr a-z A-Z # will translate every lower case letter to UPPER CASE LETTER
 
   
 
-```shell
+```bash
 
 tr -s "a"
 
@@ -588,7 +654,7 @@ tr -s "a"
 
 - -u unique (same as cmd unique )
 
-```shell
+```bash
 
 sort -t ':' -nk 3 # sort by USERID numerically
 
@@ -599,9 +665,8 @@ sort -t ':' -nk 3 # sort by USERID numerically
 
 **Uniq**
 - 
-
+- accepts data from STDIN or file
 - goes in combination in sort
-
 - removes continues same strings from lines
 
 example :
@@ -624,11 +689,13 @@ brako
 
 ```
 
-- -c counts the number of occurences
+- **-c** counts the number of occurences
 
 example :
 
-```shell
+```bash
+
+# Input
 
 dario
 
@@ -640,7 +707,7 @@ brako
 
 uniq -c
 
-Result:
+# Result:
 
 3 dario
 
@@ -648,12 +715,13 @@ Result:
 
 ```
 
-- -d display only repeated strings in file with the highest repeated(most popular) being on top
+- **-d** display only repeated strings in file  (avoids the non duplicate strings)
 
 example :
 
-```shell
+```bash
 
+# Input
 apple
 
 apple
@@ -672,7 +740,7 @@ orange
 
 uniq -d
 
-Result:
+# Result:
 
 apple
 
@@ -680,11 +748,13 @@ pear
 
 orange
 
+# plum and orange are avoided
+
 ```
 
-- -dc show even the count of the most popular
+- **-dc** show even the count of the most popular
 
-- -u reverse the uniq command (not repeated lines by default)
+- **-u** reverse the uniq command (not repeated lines by default)
 
   
   
@@ -700,7 +770,7 @@ orange
 
 - -c <range> retrive bytes/chars from text file in a specific range
 
-```shell
+```bash
 
 cut -c 1-5 /etc/passwd # will retrive the first 5 chars of passwd file
 
@@ -711,24 +781,16 @@ cut -d ':' -f 2 /etc/passwd # will cut by : and take the 2 column
 cut -d ":" -f 2, # take from 2 column onwards
 
 ```
-
-  
   
 
 **Wc (word count)**
 - 
 
 - wc - print line, word, and byte counts for each file
-
-- -c, --bytes - print the byte counts
-
-- -m, --chars - print the character counts
-
-- -l, --lines - print the newline counts
-
-- -w, --words - print the word counts
-
-  
+- **-l**, --lines - print the newline counts
+- **-w**, --words - print the word counts
+- **-c**, --bytes - print the byte counts
+- **-m**, --chars - print the character counts
   
 
 **Sed**
@@ -738,67 +800,11 @@ cut -d ":" -f 2, # take from 2 column onwards
 
 - -i can modify the file and write back the output in the same file
 
-```shell
+```bash
 
 sed -i 's/0/3/' foo.txt # s means substitute 0 with 3 in file
 
 ```
-
-  
-  
-
-**Redirection and Pipelines**
-- 
-
-- /> to file
-
-- />> append to file
-
-- <
-
-- <<
-
-- 2> stderr to file
-
-- 1> stdout to file
-
-- 2>&1 stderr converted to stdout
-
-- 2>&0 stderr converted to stdin
-
-  
-
-```shell
-
-tr a-z A-Z <test1 > test1 # test1 will be blank in the end
-
-```
-
-  
-
-*[Stack overflow answer](https://stackoverflow.com/questions/6696842/how-can-i-use-a-file-in-a-command-and-redirect-output-to-the-same-file-without-t)*
-
-  
-
-> *You can't use redirection operator (> or >>) to the same file, because it has a higher precedence and it will create/truncate the file before the command is even invoked. To avoid that, you should use appropriate tools such as tee, sponge, sed -i or any other tool which can write results to the file (e.g. sort file -o file)*.
-
-  
-
-*[Pipeline](https://en.wikipedia.org/wiki/Pipeline_(Unix))*
-
-  
-
-Pipelines passs stdout from one process to stdin in the chained process.
-
-> *By default stderr is not passed through the pipe*
-
-```
-
-use |& to pass even the stderr through the pipe
-
-```
-
-  
   
 
 **AWK**
@@ -810,7 +816,7 @@ use |& to pass even the stderr through the pipe
 
 - $NF prints the last word in every line.
 
-```shell
+```bash
 
 Input:
 
@@ -838,7 +844,7 @@ Result :
 
   
 
-```shell
+```bash
 
 awk '{count = ($2+$3+$4)/3;
 
@@ -858,17 +864,13 @@ else print $0,": A";
 
 - Find the,that,those,then insensitive using extended grep( When Pearl version doesn't work :( )
 
-```shell
-
+```bash
 grep -iw -e 'the\|that\|those\|then'
-
-  
-
 ```
 
 - NR - prints number of row(line) you want from the text
 
-```shell
+```bash
 
 awk 'NR==1 END{print}'  # will print first row and END will print last row
 
@@ -878,7 +880,7 @@ awk 'NR==1 END{print}'  # will print first row and END will print last row
 
 - -v add a variable from bash
 
-```shell
+```bash
 
 $NUMBER=69
 
@@ -980,7 +982,7 @@ awk -v NUMBER=$NUMBER '{printf NUMBER}'
 
 * example
 
-```shell
+```bash
 
 exec  > myFile # everything in this script will be redirected to myFile and won't be displayed on screen
 
@@ -1066,7 +1068,7 @@ echo  "hell"
 
   
 
-```shell
+```bash
 
 kill -SIGTERM <pid>
 
