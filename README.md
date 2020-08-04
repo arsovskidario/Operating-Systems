@@ -285,7 +285,8 @@ ls -la | grep -Pv "(Wallpapers)"  | egrep -o "Screenshot.*"  | xargs -I {} rm {}
 - r - 4 - Read
 - w -2 - Write
 - x - 1 - Execute
-![permissions](https://github.com/arsovskidario/Operating-Systems/blob/master/images/permissions.png?raw=true)
+
+- ![permissions](https://github.com/arsovskidario/Operating-Systems/blob/master/images/permissions.png?raw=true)
 - **l symlink has dummy permissions and not the actual of the file it is referencing**
 - **chmod** permission file_path 
 ![chmodperm](https://github.com/arsovskidario/Operating-Systems/blob/master/images/chmod_permissions.png?raw=true)
@@ -333,6 +334,7 @@ snap - name of file/directory
 <
 <<
 cat foo > bar # If bar doesn't exist it is created else it is overwriten with content from foo
+
 # STDIN, STDOUT, STDERR are file descriptors in Linux, because everything is a file 
 Filedescriptors : STDIN =0, STDOUT=1, STDERR=2
 
@@ -466,143 +468,159 @@ cat allJaneEmails.txt | sort | awk 'BEGIN { "print \$1" > "allJaneEmails.txt"}'
   
   
 
+
 **FIND**
 - 
 
-- scan through directory for a file or dir that fits a specific criteria
-
-- -type (d,f) search for dir or file
-
-- -name <input> search for file/dir with a given name
-
-exampls:
-
+- scan through directory for a file or dir that fits a specific criteria (traversing the tree hierarchy)
+- has Tests, Options,  Actions
+- **find frequently stats files during the processing  of  the  command
+       line itself, before any searching has begun.**
+### Find number logic 
+- +n = means above/greater than n 
+- -n = means lower than n
+- n = means exactly n
 ```bash
-
-find . -name "darko.txt"
-
-find . -name "darko.*"
-
-find . -name "darko*"  # name contains darko
-
-find . -name "*.pdf"  # every pdf file
-
+find . -name "*.pdf" -amin -10 # PDF that was accessed before 10 mins
 ```
 
-- -iname <input> same as -name but case insensitive
+- -P = by DEFAULT, *never follow symbolic links* ( will only list the links but wont follow them)
+-  -L = follow symbolic links (broken sym links are ignored) 
 
-- -group <group_name> find file by group name
+### Tests
+- tests are conjucted with the logical AND, thus all tests need to met the criteria before actions are taken
+- type <type_file>	
+	- f = file
+	- l = symbolic link
+	- d = directory
+```bash 
+find . -type f -executable 2>/dev/null # Find files that are executable
+```
+- name <pattern_name>
+- iname  = like name but case-insensitive
+- empty = match empty files and directories
+```bash
+find . -type f -empty
+```
+- executable = match files which are executable and directories that are searchable
+- inum n = match files with inode number n ( Helpful for finding Hard Links )
+```bash
+find . -inum 123 # Will find all hard links of file with inode 123
+```
+- samefile <file_name> = same as inum, but you give the file reference ( its name )
+- links n = file has n hard links 
+- size
+	- +n = larger than n amount
+	- -n = smaller than n
+	- n = exactly n
+	- Unit Measurement : 
+		- Default is 512 bytes block
+		- c = bytes
+		- w = 2bytes (words)
+		- k = kilobytes
+		- M = megabytes
+		- G = gigabytes
+```bash
+find . -type d -size +10M # Directories larger than 10MB
+find . -type f -size -5c # less than 5 bytes
+find . -type l -size 1024k # exactly 1024KB
+```
+#### Time modifications
+- cmin n   = file/dir changed n minutes ago
+- ctime n = file/dir changed n *24 hours ago (DAYS)
+- amin n = file/dir accessed n minutes ago
+- atime n = file/dir accessed n * 24 hours ago
+-  mmin n = modify time
+- mtime n 
+- newer <file_name> = match file/dir modified more recently than file 
+- anewer <file_name> = accessed more recently
+- cnewer <file_name> =changed more recently
 
-- -user <group_name> find file by user name
-
-- -user <group_name> find file by user name
-
-- -perm <binary_or_symobols> find file based on a specifi permission
-
-- -executable for executable files
+#### Permissions 
+- perm <bin_mode> = match files/dir that have permission set by mode
+- user <u_name> = match files belonging to user
+- nouser  = not belonging to user
+- uid  <u_number> =match files belonging to USER ID
+- gid <g_number> = matching group id
+- group <g_name> = matching group by name
 
 ```bash
-
-find ./ -perm -g=w # will take all the fiels that have write perm on group
-
-find ./ -perm g=w # will only look for files that will have only group write perm
-
-find / -perm -0777 # find all fies that have rwxrwxrwx permission
-
-*Notice: without the - it will search for 000 permission*
-
+find ./ -perm g=w # Find files that have only group write permission ( Like 0020)
+find ./ -perm /g=w # Find files that have group write permission
+find / -perm /0777 # find all fies that have rwxrwxrwx permission and below 
 ```
-
-- -mmin,amin,cmin +/ <number> modified number min ago (+more than 10min ago, - less than 10min ago)
-
-- -mtime,atime,ctime +/- <number> same as min but for days <number>*24 hours
-
+### Actions 
+- when result is found we can do various actions on that result 
+- **WARNING:** Place at the end of the find statement 
 ```bash
+find ~ -type f - name "*.pdf" -print # if the two conditions are met the files will be printed out
+find ~ -print -type f -name "*.pdf" # Will print before the tests and thus will not return desired result 
+# Basically it will print out all the files, not only PDF's
+```
+- delete = delete files that meet criteria
+- print = print list of results ( By default this is on )
+```bash
+find ~ -print # This is on by default
+```
+- print0  = same as print but will capture names with embedded spaces or null in their name and the same goes for xargs
 
-find dest -ctime -60 # change time
+- printf = print formated text
+```bash
+-%f  # File original name
+-%i  # File inode
+-%p  # Full path from starting search point
+-%P  # Same as -p without starting point
+-%d  # Depth of the file from search destination
+-%n  # Number of hard links
+-%s  # Size in bytes
+-%y  # File type 
 
--atime # access time
 
--mtime # modified time
+-A@ # Aceess time in UNIX Seconds time from 1 Jan 1970
+-T@ # Modifiet time -||-
+-C@ # change time -||-
+
+find / -printf "@T@ %p \n"
+
+find / -printf "%A@ %p \n" 2>/dev/null | tail -n 1  # Grab full path of Last accessed file
+
+
+-%G # Group Id
+-%g # Group name
+-%U # User ID
+-%u # user name
+-%m # file permissions in bits
+-%M # File permissions symobilic like in LS -l
 
 ```
+- quit = quit once a match has been made
+- ls = ls on files and send output to STDOUT
+- **exec vs xargs**
+```bash
+# Why is xargs faster than exec
+-exec works likes this : 
+# ls -l file1
+# ls -l file2
+xargs works like this :
+# ls -l file1 file2
 
-- -maxdepth<number> give number of levels the find can recursively search in
-
+find . -name "*.pdf" -print0 | xargs -0 ls
+```
+### Options
+- used to control the SCOPE of the find search
+- -maxdepth<lvl_number> = levels are non-negtaive maxdepth = do kolko pod direktorie da ide nadole
+- mindepth<lvl_number> = kolko minimum pod direktorie da ima toj shto trazimo 
 *(prefered to be in front of the options )*
-
 ```bash
 
-find / -maxdepth 1 -type f -name "dario"  # will look only in the curr directory
+find / -maxdepth 1 -type f -name "dario"  # Will look only in the curr directory
 
-find / -maxdepth 2 -type f -name "dariO"# will look in subdirectories too
-
+find / -maxdepth 2 -type f -name "dariO" # Will look in subdirectories too 
 ```
 
-- -anewer <file_name> # find files that are newer then give file
+- mount = not to traverse mounted directories on other systems
+- prune = if file is directory don't descend into it 
 
-```bash
-
-find -anewer file -exec rm {} \;  # remove files that are newer than given file
-
-```
-
-- -size +/ <number>M/K/G search for file/dir +(above) <number> MB(M),KB(K),GB(G), -(below) that <number>
-
-- -empty find empty files
-
-- -exec \; execute multiple commands when you find the specific file/dir
-
-  
-
-- -printf print formated text
-
--%d depth of file
-
--%f file original name
-
--%p full path of file from search destination
-
--%P same as %p but without the first /
-
--%G get group id , %g group name or group id
-
--%U get user id, %u user name or user id
-
--%i file inode
-
--%m file permission in bits
-
--%M permission in symbolic form as in LS -L
-
--%s size of file in bytes
-
--%y file type
-
--%n number of hard links
-
--%Tk File's last modification time in the format specified by
-
-k, which is the same as for %A.
-
-*-%T@ @ = seconds since Jan. 1, 1970, 00:00 GMT, *
-
--%Ak acces time
-
--%Ck same as %Tk but for change time
-
-*k = @,H(hour),M(min),S(sec),Z(timezone),D(mm/dd/yy)*
-
-```bash
-
-find / -printf '%T@ %p \n'  #list all files and seconds from 1970 ,Starting from oldest to newest
-
-find / -printf '%T@ %p \n'  2>/dev/null | tail -n 1 # grab name of last created file
-
-```
-
-  
-  
 
 **TR**
 - 
