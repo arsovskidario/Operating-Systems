@@ -389,86 +389,6 @@ find . -name ".pdf" 2>/dev/null | grep -w "dario"
 - **use |& to pass even the stderr through the pipe**
 
 
-## Text manipulation
-  
-
-**Grep**
-- 
-
-- work inside of the file
-
-- works with regex
-
-- by default if no file is given, recursively searches threw whole dir
-
-- -i makes grep search for case insensitive words
-
-- -v reverse search
-
-- -w select whole word as match ( ex. grep -w "Dario" file => will only search for Dario)
-
-- -c shows on which line the match appears
-
-ex. grep -wirc "Dario" . -> prints how many matches are there in every file for the word Dario
-
-- -B <number> number of lines before match
-
-- -A <number> number of lines after match
-
-- -C <number> number of lines before and after the match
-
-./* =>search for every dir and file
-
-  
-
-- -l shows files that contain the match
-
-- -m <number> limits the number of matches that will be found in a given file
-
-ex. if you have x10 Dario users it will return match for only 5 if grep -m 5 "Dario"
-
-grep "..." => . means any character
-
-- -P means using the Pearl language regex
-
-ex. grep -P "/d {3} " -> search for 3 decimals in a row
-
-  
-
-- -o shows only the matching words and not the entire line
-
-  
-
-- -r recursively search threw current directory and subdirectories but dont follow symbolic links
-
-ex. if grep -r "darko" foo =>and foo is a sym link it will follow it
-
-  
-
-- -R same as -r but will follow sym links by default
-
-  
-
-Some examples of the grep command in use :
-
-```bash
-
-grep -P -A 4 "^Jane" data.txt | grep -P "[a-zA-Z0-9\-\_\.]+@[a-zA-Z0-9\_]+.[a-zA-Z0-9]+"
-
-cat allJaneEmails.txt | sort | awk 'BEGIN { "print \$1" > "allJaneEmails.txt"}'
-
-```
-
-  
-
-- $? specia symbol that returns the exit code of the last command ( 0 = okay, 1 = minor problem ex. cant acces subdir, 2 = serious trouble ex. command line arguments )
-
-- /dev/null special file (null device ) discards everything inputed to it and return EOF
-
-  
-  
-
-
 **FIND**
 - 
 
@@ -622,248 +542,231 @@ find / -maxdepth 2 -type f -name "dariO" # Will look in subdirectories too
 - prune = if file is directory don't descend into it 
 
 
-**TR**
-- 
+## Text manipulation 📝
+
+### REGEX 
+-  find patterns in text
+- Metacharacters reserved for REGEX ( extended regular expressions used by grep, sed)
+	- ^ $ . [ ] { } - ? *  +  (  )  |  \  
+	- They need to be escaped if you want them to be a literal character.
+	```bash
+	sed 's/^\(/d*\)/prefix' # Find phone numbers writen with () at the start 
+	Example:
+	(234) 524 233
+	``` 
+### REGEX Cheat Sheet
+```bash
+
+Anchors :
+^ - beginning of line
+$ - end of line
+^$ - Match all blank lines 
+
+grep "^zip$" /etc/ # Will match only lines that have zip only on the line itself
+# Example : 
+# Bargakso zip
+# ksdsdkzip
+# zip
+# Output :
+# zip 
+
+Groupings :
+[] - Matches Characters in brackets ( Set of characters )
+egrep "[a-z]$" # Match ending with lower case letter
+[^ ] - Matches Characters NOT in brackets ( Negates the Set )
+| - Either Or
+egrep "AAA|BBB"  # Will match string "AAA" OR "BBB"
+( ) - Group
+egrep "(AAA|BBB)" # Better practice than above mentioned 
+egrep "^(AAA|BBB)\.zip" # Match files startring with AAA OR BBB and ending with .zip
+
+. - Any Character Except New Line
+\d - Digit (0-9)
+\D - Not a Digit (0-9)
+\w - Word Character (a-z, A-Z, 0-9, _)
+\W - Not a Word Character
+\s - Whitespace (space, tab, newline)
+\S - Not Whitespace (space, tab, newline)
+\b - Word Boundary
+\B - Not a Word Boundary
+
+egrep "(\w+)" # Match words 
+egrep "([[:alnum:]]+)" # Same as above 
+
+Quantifiers:
+
+* - 0 or More
++ - 1 or More
+? - 0 or One
+{3} - Exact Number
+{3,4} - Range of Numbers (Minimum, Maximum)
+{3,} - 3 or more times
+egrep ".{3}\.zip" # Match 3 characters after that .zip extension
+
+#### Sample Regexs ####
+
+[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+
+```
+
+### Grep
+- works inside of file
+- works with regex
+- by default if no file is give, recursively searches through whole directory
+- **Options:**
+	- -i ignore case (doesn't distinguish lowercase/uppercase)
+	- -v invert the match
+	- -c count matches
+	- -l print name of file contains a match insead of the line
+	- -L inverse of l ( will print files that dont contain the match)
+	- -n on what line the match is located
+	- -m NUM , max-count =num stop after num of matches
+	- -w select whole word as match
+	- A NUM  number of lines after match
+	- B NUM number of lines before match
+	- C NUM number of lines before AND after match
+- **use egrep for the extended REGEX**
+```bash
+egrep -A 4 "^Jane" data.txt | egrep "[a-zA-Z0-9\-\_\.]+@[a-zA-Z0-9\_]+.[a-zA-Z0-9]+"
+ ```
+
+### TR
 
 - translate or delete characters
-
-- only works if you pipe or redirect input to it ( can't specify file as input )
-
-  
-
+- only works if you pipe or redirect input to it ( can't specify file as input )  
 ```bash
-
 tr a-z A-Z # will translate every lower case letter to UPPER CASE LETTER
-
-```
-
-  
-
+```  
 - -d delete specified character
-
-- -s squeeze repeats, basically means removing duplicates of a char in a word
-
-  
+- -s squeeze repeats, basically means removing duplicates of a char in a word 
 
 ```bash
-
 tr -s "a"
-
+tr -s " " text.txt
 ```
+-  ***HINT:** Handy when used for squeezing spaces and tabs in a text*
 
--  *HINT: Handy when used for squeezing spaces and tabs in a text*
-
-  
-
-**Sort**
-- 
-
+### Sort
+- sort file lexicographically by default
 - can use file as input
-
-- sorts output lexicographically be default
-
-- -k 2 will sort by 2 column the standard delimetar is space
-
-- -r reverse sort
-
-- -n numberical sort
-
-- -t field separator ( change it if you want for it to be different from psace )
-
-- -u unique (same as cmd unique )
-
+- Sort multiple files into one file
 ```bash
-
-sort -t ':' -nk 3 # sort by USERID numerically
-
+sort file1.txt file2.txt > result_sorted_files.txt
 ```
+- **Options:**
+	- n sort based on numerical values
+	- r reverse the sorting order ( By default it is Ascending order )
+	- k sort based on a key field
+	- t define the filed separator ( By default it is space or tabular space)
+	- o send sorted output to file and not STDOUT
+	```bash
+	sort -t ":" -nk 3 /etc/passwd # Sort by USERID numberically 
+	sort -t ":" -k 7 /etc/passwd | head 
+	```
 
-  
-  
-
-**Uniq**
-- 
-- accepts data from STDIN or file
-- goes in combination in sort
-- removes continues same strings from lines
-
-example :
-
-```
-
-dario
-
-dario
-
-dario
-
-brako
-
-Result :
-
-dario
-
-brako
-
-```
-
-- **-c** counts the number of occurences
-
-example :
-
+### Uniq
+- accepts data from STDIN or file and send result to STDOUT
+- goes in combination with sort
+- Lines need to be adjacent to each other (next to each other ) to be removed by uniq
+- **Options:**
+	- i ignore case while comparing
+	- s n, skip n chars from each line
+	- u output only unique lines. Lines with duplicates are ignored
+	- d output only lines that have duplicate entries and are not unique
+	- f n, skips n fields in comparing
+	- c counts the number of occurrences
 ```bash
-
 # Input
-
 dario
-
 dario
-
 dario
-
 brako
-
 uniq -c
-
 # Result:
-
 3 dario
-
 1 brako
-
 ```
-
-- **-d** display only repeated strings in file  (avoids the non duplicate strings)
-
-example :
 
 ```bash
+# Examples
+a
+a
+b
+c
+c
+c
+uniq text_above 
+# Result : 
+# Duplicates are removed and only one of each group is left
+a
+b
+c
 
-# Input
-apple
+uniq -u text_above 
+# Result : 
+b
 
-apple
-
-apple
-
-pear
-
-orange
-
-pear
-
-plum
-
-orange
-
-uniq -d
-
-# Result:
-
-apple
-
-pear
-
-orange
-
-# plum and orange are avoided
-
+uniq -d text_above 
+# Result : 
+a
+c
 ```
 
-- **-dc** show even the count of the most popular
-
-- **-u** reverse the uniq command (not repeated lines by default)
-
-  
-  
-
-**Cut**
-- 
-
+### Cut 
 - extracts/filters text based on columns
-
-- -f <number> number of column you want to take
-
-- -d <symbol> symbol represents a char that will be your delimiter (*By default it is TAB*)
-
-- -c <range> retrive bytes/chars from text file in a specific range
-
-```bash
-
-cut -c 1-5 /etc/passwd # will retrive the first 5 chars of passwd file
-
-cut -c 3 /etc/passwd # will return the 3rd character
-
-cut -d ':' -f 2 /etc/passwd # will cut by : and take the 2 column
-
-cut -d ":" -f 2, # take from 2 column onwards
-
-```
-  
-
-**Wc (word count)**
-- 
-
+-  **Options :**
+	- f number of column you want to take ( can be multiple)
+	- d symbol, represents a char that will be your delimiter ( By default is TAB )
+	- c retrieve bytes/chars from text file in a specific range
+	- --complement  = Reverse the cut operation
+	```bash
+	cut -c 7,10 file.txt # Take characters from 7th position to 10th position 
+	cut -c 23- file.txt # Take chars starting from 23th position to end of line
+	cut -c 3 /etc/passwd # Will return the 3rd character
+	cut -d ':' -f 2 /etc/passwd # Will cut by : and take the 2nd column
+	cut -d ":" -f 2, /etc/passwd  # Will cut by :  and take from the 2nd column onwards
+	```
+### Comm 
+- comm file1 file2
+	- compare two text files and displays the lines that are unique to each one and the lines they have in common
+	- First column unique lines for file1,  second column is reserved for unique lines of file2, third column is for the lines that are common for both files
+	```bash
+	comm -12 file1 file2 # Will show only the common lines between the two files
+	# -12 Means don't show the first and the second column 
+	comm -1 file1 file2 # Will show the unique lines of file2 and the common lines
+	```
+### Wc (word count)
 - wc - print line, word, and byte counts for each file
 - **-l**, --lines - print the newline counts
 - **-w**, --words - print the word counts
 - **-c**, --bytes - print the byte counts
 - **-m**, --chars - print the character counts
   
-
-**Sed**
-- 
-
-- functions the same as TR
-
-- -i can modify the file and write back the output in the same file
-
-```bash
-
-sed -i 's/0/3/' foo.txt # s means substitute 0 with 3 in file
-
-```
   
-
-**AWK**
-- 
+### AWK
 
 - Reads/Processes only one line at a time .
-
 - NF is a variable that counts every word(separeted by whitespace default) in a every line.
-
 - $NF prints the last word in every line.
-
 ```bash
-
-Input:
+# Input:
 
 A 25 27 50
-
 B 35 75
-
 C 75 7
-
 D 99 88 76
 
 awk '{print NF}'
 
-Result :
+# Result :
 
 4
-
 3
-
 3
-
 4
-
 ```
 
-  
 
 ```bash
-
 awk '{count = ($2+$3+$4)/3;
 
 if(count <50) print $0,": FAIL";
@@ -875,23 +778,18 @@ else if(count <80) print $0,": B";
 else print $0,": A";
 
 }' inputs2
-
-  
-
 ```
 
 - Find the,that,those,then insensitive using extended grep( When Pearl version doesn't work :( )
 
 ```bash
-grep -iw -e 'the\|that\|those\|then'
+egrep -iw '(the\|that\|those\|then)'
 ```
 
 - NR - prints number of row(line) you want from the text
 
 ```bash
-
 awk 'NR==1 END{print}'  # will print first row and END will print last row
-
 ```
 
   
@@ -899,14 +797,72 @@ awk 'NR==1 END{print}'  # will print first row and END will print last row
 - -v add a variable from bash
 
 ```bash
-
 $NUMBER=69
-
 awk -v NUMBER=$NUMBER '{printf NUMBER}'
-
 ```
 
-  
+### Sed
+- stream editor
+- Performs text editing on a stream of text
+- Pattern in sed are **REGEX** patterns 
+- **s** = search and replace strings
+```bash
+sed "s/str1/str2/" file1 # Will replace only the first instance on every line
+sed "s/str1/str2/g" file1 # Will replace every instance of str1 on every line
+```
+- **addressing** = specifies which lines of the input stream will be edited
+- If no address is specified the editing is carried out on every line in the input stream
+```bash
+# Will translate the string EVERY first occurenec of string darko to magarko
+sed 's/darko/magarko'
+# Will translate only the string darko on the 2ND LINE of the input
+sed '2s/darko/magarko' 
+```
+- using REGEX you can capture groups and use \n for manipulating the output, n being number of group from 1 to 9  
+```bash
+# Example REGEX :
+# Format given MM/DD/YY
+# First group matches the month, second matches the day, the third matches the year
+([0-9]{2})/([0-9]{2})/([0-9]{4})$ =REGEX TO MATCH date
+\3-\1-\2 # Takes group 3,1,2 and therefore is the format YY/MM/DD
+```
+- **Meta characters must be escaped in sed because they are treated as character literals by default**
+-  **-r** Removes the problem ( use  extended regular expressions in the script (for portability
+              use POSIX -E)
+```bash
+# REGEX
+(Lili|Kamen)
+sed 's/\(Lili\|Kamen\)/darko' 
+# ^ $ . [ ] { } - ? * + ( ) | \
+# Must be escaped with \ 
+
+# Bracket group capture doesn't have to be escaped
+sed 's/^[[:digit:]]/darko/' passwd.txt  | egrep "darko" # Works
+
+# Must be escaped
+sed 's/\([0-9]\{2\}\)\/\([0-9]\{2\}\)\/\([0-9]\{4\}\)$/\3-\1-\2/' distros.txt 
+
+# Nothing needs to be escaped
+cat passwd.txt  | sed -r "s/(Lili|Kamen)/Darko/g" | egrep "Darko"
+```
+- **p** print current line / lines that match REGEX or specified range
+- must add -n so sed doesn't print all the lines by default 
+```bash
+sed -n '2,6p' text  # Print lines 2-6 from text
+sed -n '15!p' text # print every line except the 15 line
+
+sed -n '/dario/p' /etc/passwd # Print lines that match the REGEX  (dario)
+sed -n '$p' /etc/passwd # Print the last line of the file /etc/passwd
+
+sed "s///g;s/c/C/g" # Have multiple set pattern changes with one invocation of sed cmd 
+
+sed "/pattern/d" # Delete lines where patern was found                                                         
+```
+- **i** edit files in place (makes backup if SUFFIX supplied)
+```bash
+sed -i # Change the original file content based on sed expressions 
+```
+
   
 
 **Processes**
