@@ -649,6 +649,8 @@ tr -s " " text.txt
 - sort file lexicographically by default
 - can use file as input
 - Sort multiple files into one file
+![Sort_fields](https://github.com/arsovskidario/Operating-Systems/blob/master/images/sort.png?raw=true)
+
 ```bash
 sort file1.txt file2.txt > result_sorted_files.txt
 ```
@@ -804,7 +806,9 @@ awk -v NUMBER=$NUMBER '{printf NUMBER}'
 ### Sed
 - stream editor
 - Performs text editing on a stream of text
-- Pattern in sed are **REGEX** patterns 
+- Pattern in sed are **REGEX** patterns \
+- **Basic commands**
+![commands](https://github.com/arsovskidario/Operating-Systems/blob/master/images/sed_editing_cmds.png?raw=true)
 - **s** = search and replace strings
 ```bash
 sed "s/str1/str2/" file1 # Will replace only the first instance on every line
@@ -812,6 +816,7 @@ sed "s/str1/str2/g" file1 # Will replace every instance of str1 on every line
 ```
 - **addressing** = specifies which lines of the input stream will be edited
 - If no address is specified the editing is carried out on every line in the input stream
+![set_addressing](https://github.com/arsovskidario/Operating-Systems/blob/master/images/sed_address.png?raw=true)
 ```bash
 # Will translate the string EVERY first occurenec of string darko to magarko
 sed 's/darko/magarko'
