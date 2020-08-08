@@ -465,6 +465,26 @@ find . -type l -size 1024k # exactly 1024KB
 - group <g_name> = matching group by name
 
 ```bash
+We can specify the MODE in three different ways as listed below.
+
+    If we specify the mode without any prefixes, it will find files of exact permissions.
+    If we use "-" prefix with mode, at least the files should have the given permission, not the exact permission.
+    If we use "/" prefix, either the owner, the group, or other should have permission to the file.
+
+    find . -perm 0777 # Exact 777 permission 
+    find . -perm -0400 # user has atleast read permission  (0400 and above is accepted)
+    find . -perm -0220 # File has to be read by owner and group
+    find . -perm /02220 # Can be read by User OR Group, either will work
+
+    # 0665 file1, 0644
+
+    find . -perm -0220 # Result : file1
+    find . -perm /0220 # Result : file1 file2
+    # File2 is printed because it has READ user permission, and because you need only one to match it works
+
+```
+
+```bash
 find ./ -perm g=w # Find files that have only group write permission ( Like 0020)
 find ./ -perm /g=w # Find files that have group write permission
 find / -perm /0777 # find all fies that have rwxrwxrwx permission and below 
@@ -497,6 +517,8 @@ find ~ -print # This is on by default
 
 
 -A@ # Aceess time in UNIX Seconds time from 1 Jan 1970
+-Ar # Time Formar HH:MM:SS 12 hours
+-AT # time, 24-hour (hh:mm:ss.xxxxxxxxxx)
 -T@ # Modifiet time -||-
 -C@ # change time -||-
 
@@ -628,7 +650,10 @@ egrep ".{3}\.zip" # Match 3 characters after that .zip extension
 ```bash
 egrep -A 4 "^Jane" data.txt | egrep "[a-zA-Z0-9\-\_\.]+@[a-zA-Z0-9\_]+.[a-zA-Z0-9]+"
  ```
-
+```bash
+# Take every word from a line with grep
+egrep -o "\s*\w*\s*"
+```
 ### TR
 
 - translate or delete characters
@@ -721,11 +746,12 @@ c
 	- c retrieve bytes/chars from text file in a specific range
 	- --complement  = Reverse the cut operation
 	```bash
-	cut -c 7,10 file.txt # Take characters from 7th position to 10th position 
+	cut -c 7,10 file.txt # Will take the 7th and 10th character 
+	cut -c 7-10 file.txt # Take characters from 7th position to 10th position 
 	cut -c 23- file.txt # Take chars starting from 23th position to end of line
 	cut -c 3 /etc/passwd # Will return the 3rd character
 	cut -d ':' -f 2 /etc/passwd # Will cut by : and take the 2nd column
-	cut -d ":" -f 2, /etc/passwd  # Will cut by :  and take from the 2nd column onwards
+	cut -d ":" -f 2- /etc/passwd  # Will cut by :  and take from the 2nd column onwards
 	```
 ### Comm 
 - comm file1 file2
@@ -742,13 +768,72 @@ c
 - **-w**, --words - print the word counts
 - **-c**, --bytes - print the byte counts
 - **-m**, --chars - print the character counts
+
+### Head 
+- print the first 10 lines of input
+- **Options:**
+	- c print  the  first  NUM bytes of each file, **-** means print all but the last NUM bytes of file
+	- n print first NUM liens of file, **-** print all but the last NUM lines
+	```bash
+	sort -n -5 /etc/passwd
+	sort -c 25 
+	```
   
-  
+### Tail
+- print last 10 lines of input
+- **Options:**
+	- c print the last NUM bytes of file, +NUM print with starting from NUM byte of file
+	- n print the last NUM lines, +NUM start print from NUM line 
+
 ### AWK
 
 - Reads/Processes only one line at a time .
-- NF is a variable that counts every word(separeted by whitespace default) in a every line.
-- $NF prints the last word in every line.
+- **NF** is a variable that counts every word(separeted by whitespace default) in a every line.
+- **$NF** prints the last word in every line.
+- $0 = references whole line, $1 =references first column , $n = get n column
+- BEGIN = block executed at start
+- END = block executed at the end 
+- FILENAME = get current filename
+```bash
+awk '{print FILENAME}' f1 
+# Result
+f1 
+f1
+f1
+```
+
+```bash
+### Trcik Alert! 
+awk -F "," '{print $NF,$0}' | sort -nrk 1 | cut -d " " -f 2-  # Get last word and sort by that number after wards delete it 
+
+#-- 03-b-9053
+# **Използвайки файл population.csv, намерете коя държава има най-много население през 2016. А коя е с най-малко население?
+# (Hint: Погледнете имената на държавите)**
+
+```bash
+cat population.csv | egrep "2016," | awk -F "," '{print $NF,$0}' | sort -nrk 1 | cut -d " " -f 2-
+```
+
+- **NR** - prints number of row(line) you want from the text
+```bash
+awk 'NR==1 END{print}'  # will print first row and END will print last row
+```
+
+- -v add a variable from bash
+
+```bash
+$NUMBER=69
+awk -v NUMBER=$NUMBER '{printf NUMBER}'
+```
+
+#### Function 
+- substr(str,index,len) = take string and make substring starting at index and of length len
+```bash
+cat /etc/passwd | cut -d ":" -f 5 | awk '{for(i=1;i<=length($1);i++) print substr($1,i,1)}' | sort | uniq -cu # get every letter from line
+awk '{print substr($1,length($1),1)}' # Get last character of every line(word)
+```
+- length(strin) = length of string 
+
 ```bash
 # Input:
 
@@ -757,7 +842,7 @@ B 35 75
 C 75 7
 D 99 88 76
 
-awk '{print NF}'
+awk '{print NF}' # Will print number of words on every line
 
 # Result :
 
@@ -785,22 +870,7 @@ else print $0,": A";
 - Find the,that,those,then insensitive using extended grep( When Pearl version doesn't work :( )
 
 ```bash
-egrep -iw '(the\|that\|those\|then)'
-```
-
-- NR - prints number of row(line) you want from the text
-
-```bash
-awk 'NR==1 END{print}'  # will print first row and END will print last row
-```
-
-  
-
-- -v add a variable from bash
-
-```bash
-$NUMBER=69
-awk -v NUMBER=$NUMBER '{printf NUMBER}'
+egrep -iw '(the|that|those|then)'
 ```
 
 ### Sed
@@ -868,195 +938,103 @@ sed "/pattern/d" # Delete lines where patern was found
 sed -i # Change the original file content based on sed expressions 
 ```
 
-  
+## Processes ⚙️
 
-**Processes**
-- 
+The kernel on startup initiates a process called init and it launches shell scripts from /etc (init scripts) which start all the system services that are implement as daemon processes ( which run in the background and don't have an interface to interact with)
+The init process isn't created with fork() and is the direct or indirect parent of all the processes ( Like Object class in Java )
+- Every process has  :
+	- Memory 
+		- some segment of memory that it can access and if it tries to access a segment of memory that isn't reserved for it, it is therefore killed 
+	- Security Context
+		- value that informs the OS what privileges does the process have
+	- Scheduling 
+		- scheduler is responsible for determining how much time should a process be allowed to run on the system
+	- Enviroment 
 
-- PID (process ID)
+- Child and Parent process
+	- Processes are organized in a hierarchy much like a tree structure
+	- Every process except for init is created using the fork() function, which creates a new process by duplicating the calling process
+	-  The created process is know as the **child process** and the calling process is called the **parent process**.
+	- Process created run in separate memory from the parent 
+	- Given the above every process is a direct or indirect descendant of the **init** process.
 
-- Nice value
+- The kernel keeps track of PID, memory assigned to each process as well as the process readiness.
+- Child processes also have PPID ( parent process id) 
 
-* [-20 highest priority,19 lowest] , default=0
-
-* стойност който определя, кои процес ще се изпълни преди другите. (пример. като приоритетна опашка)
-
-- Memory
-
-* всеки процес има право да достъпи някакви сегменти в паметта и при достъп на не позволена памет той бива убит.
-
-- Security context
-
-* стойност която информира ОС за кои права на достъп (privileges) има процесът.
-
-- Scheduling
-
-* преценява се на кой процес, колко време ще трябва да му се даде от страна на ОС.
-
-- Context Switch
-
-* създава илюзия, че процесите работят едновременно а те реално се switchvat един друг и се прекъсват за много мали интервали.
-
-- Enviroment (enviroment i shell promenlivi)
-
-- File descriptor (pipes,sockets,etc)
-
-* stdin
-
-* stdout
-
-* stderr
-
-  
-
-- init(PID=1)
-
-* пръв процес в Линукс който не се създава с fork()
-
-* starts first during booting
-
-* is the direct or indirect parent of all the processes (Like the object class in Java)
-
-  
-
-- pstree
-
-* displays a tree of processes
-
-* since every process has a parent a tree structure is formed.
-
-  
-
-- child process
-
-* process created using the fork() function
-
-* copy of parent process
-
-  
-
-- fork()
-
-* creates a new process by duplicating the calling process.
-
-* the created process is called a **child process** and the calling process is called the **parent process**.
-
-* processes created run in separate memory from the parent.
-
-* the child process is an exact copy except for :
-
-* the child has its own ID, different from the parent,
-
-* child parent PID = PID of parent
-
-* doesnt get some signals,semaphores from parent.
-
-  
-
-- exec
-
-* used to run cmds in shell
-
-* without parameters = "unholy power"
-
-* example
-
+### Ps 
+- view all processes running on the system
+- Syntax : **ps [option]**
 ```bash
-
-exec  > myFile # everything in this script will be redirected to myFile and won't be displayed on screen
-
-cat passwd
-
-date
-
-echo  "hell"
-
+ps 
+ps -u # Shows processes for specific user
+ps -e # Display every process on the system 
+ps -l # long list for ps 
+ps -x # Like ps but with STAT 
+# VSZ = virtual memory size
+# RSS = resident memory size. Ammount of phyisical memory(RAM) used by the process in KB
+# DRS = physical memory 
+ps -o user,pid,ppid,ni,tty,stat,cmd,drs=physical memory, vsz= virtual memory,rss = resident size,time=execution time # Print in specific format
+# User = process owner(USERID)
+# %CPU = cpu usage by process in %
+# %MEM = memory usage in % 
+# START = date when the process was started
+# COMMAND = name of the process 
+ps -aux
 ```
+- Meaning of the returned result :
+	- PID = process id (unique for every process )
+	- PPID = parent id
+	- TIME = amount of CPU time consumed by the process
+	- TTY (teletype) = controlling terminal of the process, ? = no controlling terminal
+	-  NI = nice value [-20 high priority, 19 low priority], 0 by default. This is used to determine the priority of the process and is used by the OS to determine which process will have priority in execution ( similar to a priority queue )
+	-  STAT = current state of process
+		- R = running process or ready to run
+		- T = stopped / instructed to stop 
+		- S = sleeping / waiting for event (keystroke or network socket)
+		- D = uninterruptable sleep , it is linked to some kind of harware and is waiting for IO operation in order to start executing ( can't be touched during this process )
+		- Z = zombie process, meaning the process has finished but wasn't cleaned by the parent process 
 
-  
+### Jobs 
+- jobs that the current shell is managing 
+- jobs are listed and can be accessed using the number in the list 
+```bash 
+$ jobs 
+# Result 
+[1] ls
+[2] ps 
+[3] xlogo
 
-- Process states
-
-* R - running
-
-* D - uninterruptable sleep(usually IO)
-
-* linked directly to hardware
-
-* can't be touched because its executing IO operations.
-
-* S - interruptable sleep(waiting for event to complete /sleeping)
-
-* waiting for signals in order to start executing.
-
-* mainly all processes are in this state.
-
-* T - stopped processes by a job.
-
-* Z - zombie/defunct
-
-* process has completed execution but still appears in the process tab.
-
-  
-
-**PS**
-- 
-
-- displays current running processes.
-
-- -u <username> shows processes for specific user
-
-- -e display every process on system
-
-- -l long list for ps cmd
-
-- -o print in specific format (pid,ppid,user,group,cmd,drs=physical memory,vsz = virtual memory,time)
-
-- ps -e -o user=Ime # change name of column header
-
-- --sort=<condition> sort by give condition ex. --sort=start_time
-
-  
-
-**JOBS**
-- 
-
-- lists your own processes
-
-- processes can work in background and in the foreground
-
--  *fg <id>* puts a process in forground (id se dobiva od jobs [])
-
--  *bg<id>* puts a process in background
-
--  *cmd &* puts a process in background
-
+$ jobs %1 # Access the first job running in the shell (ls in our case)
+```
+- by default processes that you run on the shell are **foreground** processes and don't return control of the terminal until they have finished or are stopped
+- you can switch the process to the **background** using <process_name> &, and it will run without blocking the access to the terminal 
+-  *bg* PID puts process in the background
+- *fg* PID puts process in the foreground
 - when a process is working in the background you can still use your terminal for cmds, the oposite is not true for processes working in the forground.
-
-  
-
--  **<ins>Kill</ins>**
-
-- you can signal your processes whilest root can signal all processes.
-
-- kills(terminates) it by default. (15)
-
-- kill -9 <pid> kills a process that doesn't want to terminate.
-
-- First you try to terminate the process, then if that doesn't work you kill it.
-
-  
-
 ```bash
-
-kill -SIGTERM <pid>
-
-kill -SIGKILL <pid>
-
+xlogo & # Run process in background
+jobs  # Print current running processes
+fg %1 # Bring xlogo to the foreground 
 ```
+### Kill 
+- processes communicate by signaling each other 
+- processes are always listening for signals
+- Kill is used to send a signal to the process that tells it what to do 
+- Syntax : **kill [-SIGNAL] PID**
+- **You must be the owner of the process in order to send a kill signal**
+- by default the TERM ( terminate signal) is sent which terminates a runnig process 
+```bash
+# Best practice is to -TERM the process first
+# If that doesn't work use -KILL
 
-  
-  
+kill -TERM PID # Process is allowed to cleanup its mess
+kill -KILL PID # Process is terminated and isn't allowed to perform cleanup
+kill -STOP PID # Process is stopped but not terminated
+kill -CONT PID # The process will continue if it was stopped 
+kill -INT PID # Send interrupt signal to the process (Most of the time this kills it)
+
+killall -KILL name # Will send signal for kill to all instances of the process with the same name 
+```
 
 **Scripting**
 -

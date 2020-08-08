@@ -1,0 +1,21 @@
+How to read /etc/passwd
+root:x:0:0:root:/root:/bin/bash
+
+1. Account username.
+2. Placeholder for password information. The password is obtained from the "/etc/shadow" file.
+3. User ID
+4. Group ID
+5. Comment field. This field can be used to describe the user or user's function. This can be anything from contact information for the user, to descriptions of the service the account was made for.
+6. Home directory
+7. Shell
+
+from passwd(5):
+
+/etc/passwd contains one line for each user account, with seven fields delimited by colons (“:”). These fields are:
+·   login name
+·   optional encrypted password
+·   numerical user ID
+·   numerical group ID
+·   user name or comment field
+·   user home directory
+·   optional user command interpreter
