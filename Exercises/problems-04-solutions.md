@@ -1,41 +1,55 @@
-**Solutions**
-- 
+## Solutions 
 
-1. 
-- ```shell
-	ps -e -o cmd --sort=start_time | head -n 10
-   ```
+-- 04-a-6000
+Намерете PID и командата на процеса, който заема най-много виртуална памет в системата.
 
-2. 
-- ```shell
-        ps -e -o vsz,pid,cmd | sort -nrk1 | head -n1 | cut -d " " -f 2-
-   ``` 
+```bash
+ps -e -o pid,cmd --sort=vsz | tail -n 1 
+```
 
-3. 
-- ```shell
-        ps -e -o group,drs | awk 'BEGIN{count=0} {if($1=="dario") count+=$2} END{print count}'
-   ```
 
-4. 
-- ```shell
-     ps -e -o -user,cmd  | sort -k 1 | awk '{ if($2=="vim) print$0}' | uniq -c | tr -s ' ' |awk '{ if($1>='vim') print $2}'
-   ```
+-- 04-b-5000
+Намерете колко физическа памет заемат всички процеси на потребителската група root.
 
-5. 
-- ```shell
-     users | awk '{for(i=1;i<NF;i++) print $i}' | grep "$(ps -e -o user |sort | uniq)"
-   ```
+```bash
+ps -u root -o drs | awk 'BEGIN {count=0} {count+=$1} END{ print "Result: ",count}'
+```
 
-6. 
-- ```shell
-     print -e -o drs,group | sort -k 2 | awk 'BEGIN{count=0} {if($2 == "student") count+=$1} END{print count} '
-   ```
 
-7. 
-- ```shell
-        ps -e -o tty,pid,cmd |  tail -n +2 | awk '{if($1 != "?") print $2,$3}' | sort -u -k 2
-   ```
+-- 04-b-6100
+Изведете имената на потребителите, които имат поне 2 процеса, чиято команда е vim (независимо какви са аргументите й)
 
-8. 
-- ```shell
-   ```
+```bash
+ps -e -o user,cmd | sort | uniq -cd | awk '{if($1 > 2 && $3 ="vim") print $2}'
+```
+
+-- 04-b-6200
+Изведете имената на потребителите, които не са логнати в момента, но имат живи процеси
+
+```bash
+users > result_users
+ps -e -o user | sort | uniq > result_ps
+comm -23 result_ps result_users
+
+# Best performance 
+ps -e -o user | sort | uniq | egrep -v "$(users)"
+
+```
+
+
+-- 04-b-7000
+Намерете колко физическа памет заемат осреднено всички процеси на потребителската група root. Внимавайте, когато групата няма нито един процес.
+
+```bash
+ps -g root -o drs  | awk 'BEGIN {count=0} {count+=$1} END{print "Result:",count}'
+```
+
+-- 04-b-8000
+Намерете всички PID и техните команди (без аргументите), които нямат tty, което ги управлява. Изведете списък само с командите без повторения.
+
+```bash
+ps -e -o pid,cmd,tty | awk '{if ($3 == "?") print $1,$2}'
+```
+
+-- 04-b-9000
+Да се отпечатат PID на всички процеси, които имат повече деца от родителския си процес.

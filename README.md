@@ -957,16 +957,22 @@ The init process isn't created with fork() and is the direct or indirect parent 
 	-  The created process is know as the **child process** and the calling process is called the **parent process**.
 	- Process created run in separate memory from the parent 
 	- Given the above every process is a direct or indirect descendant of the **init** process.
-
+	- exec() is used to swap the current running process with a new process
 - The kernel keeps track of PID, memory assigned to each process as well as the process readiness.
 - Child processes also have PPID ( parent process id) 
 
 ### Ps 
 - view all processes running on the system
 - Syntax : **ps [option]**
+- **--sort=start_time**
+- **--sort=vsz** 
+- sorts in ascending order
+- can have pi,ppid and any column name 
+
 ```bash
 ps 
-ps -u # Shows processes for specific user
+ps -u user_name # Shows processes for specific user
+-s -g group_name # Show processes for specific group
 ps -e # Display every process on the system 
 ps -l # long list for ps 
 ps -x # Like ps but with STAT 
@@ -980,6 +986,8 @@ ps -o user,pid,ppid,ni,tty,stat,cmd,drs=physical memory, vsz= virtual memory,rss
 # START = date when the process was started
 # COMMAND = name of the process 
 ps -aux
+
+ps -o user=User_name,pid,ppid,stat=Status # used to set custom Column names 
 ```
 - Meaning of the returned result :
 	- PID = process id (unique for every process )
