@@ -80,7 +80,7 @@ ls -lia
 - can reference directories
 - can span physical devices
 - size of sym links is the number of characters in the name of the referenced file  and not the size of the refferenced file
-- rm  works only on the symlink and not the referenced file
+- **rm  works only on the symlink and not the referenced file**
 ```bash
 
 ln -s src dest # soft link to src with name dest
@@ -88,21 +88,21 @@ ln -s src dest # soft link to src with name dest
 # Example 
 # Symbolic links :
 
-ln -s libc-2.6.so libc.so.6 
+ln -s libc-2.6.so libc.so.6
 ls -la 
 
 # Result : 
 1243 lrwxrwxrwx 1 root root 11 2007-08-11 07:34 libc.so.6 -> libc-2.6.so
 # First char *l*, means symbolic link
 # Has different Inode than the original file 
+
+ls -A # Desn't return message "total 0" if directory doesn't have files in it 
 ```
 
 To see more detail about file ( example . Inode , size , atime ,ctime mtime )
 
 ```shel
-
 stat <file_name>
-
 ```
 - atime (access time) = time when the file was opened /touched
 - mtime(modified time) =  in the file is changed when me save file, add new stuff in it (Change the data part of the file ).
@@ -116,13 +116,11 @@ stat <file_name>
 - displays short description of file
 
 ```bash
-
 file README.md # UTF-8
 
 file regexCheatSheet # ASCII CODE
 
 file Week-1/ # directory
-
 ```
 
   
@@ -146,7 +144,6 @@ echo D > hexCode.txt
 xxd hexCode.txt
 
 * Will display : 00000000:2020 44 # 00000000:shows the number of line , 20 is space in hex ascii table , 44 is D in hex ascii table
-
 ```
 **PWD**
 - 
@@ -250,11 +247,9 @@ mkdir -p foo/bar
 - use input with a cmd that doesnt normaly use stdin (it uses parametars only)
 
 ```bash
-
 find / -name "*.pdf"  | xargs rm # find all pdf files and remove them
 
 # faster than using -exec in find
-
 ```
 
 - by default xargs will get all the input and apply the command only one time on that input
@@ -262,11 +257,9 @@ find / -name "*.pdf"  | xargs rm # find all pdf files and remove them
 - **-n 1 will make it apply on every newline (operate one by one )**
 
 ```bash
-
 users | xargs echo  "Hello,"  # will print only one Hello,
 
 users | xargs echo -n 1 "Hello,"  #will print Hello, for every user
-
 ```
 
 - I{} create a variable (the file will be put in the {} as a variable)
@@ -355,7 +348,6 @@ ls -la foo >> result.log 2>&1 # Append instead of overwriting
 
 # Sending to bit bucket( /dev/null)
 ls -la foo > result.log 2>/dev/null
-
 ```
 
   ### Things to avoid
@@ -393,9 +385,16 @@ find . -name ".pdf" 2>/dev/null | grep -w "dario"
 - 
 
 - scan through directory for a file or dir that fits a specific criteria (traversing the tree hierarchy)
-- has Tests, Options,  Actions
+- **by default find does search for hidden files**
+```bash
+# Make find skip hidden files
+find . -type f -name "[^\.]*"
+```
+- **by default find prints the result into new line**
 - **find frequently stats files during the processing  of  the  command
-       line itself, before any searching has begun.**
+       line itself, before any searching has begun.**      
+- has Tests, Options,  Actions
+
 ### Find number logic 
 - +n = means above/greater than n 
 - -n = means lower than n
@@ -417,6 +416,7 @@ find . -name "*.pdf" -amin -10 # PDF that was accessed before 10 mins
 find . -type f -executable 2>/dev/null # Find files that are executable
 ```
 - name <pattern_name>
+- **xtype l = Find broken links**
 - iname  = like name but case-insensitive
 - empty = match empty files and directories
 ```bash
@@ -445,6 +445,7 @@ find . -type d -size +10M # Directories larger than 10MB
 find . -type f -size -5c # less than 5 bytes
 find . -type l -size 1024k # exactly 1024KB
 ```
+
 #### Time modifications
 - cmin n   = file/dir changed n minutes ago
 - ctime n = file/dir changed n *24 hours ago (DAYS)
@@ -522,7 +523,7 @@ find ~ -print # This is on by default
 -T@ # Modifiet time -||-
 -C@ # change time -||-
 
-find / -printf "@T@ %p \n"
+find / -printf "@T@ %p \n" # Unix time format : 15152525.1231312
 
 find / -printf "%A@ %p \n" 2>/dev/null | tail -n 1  # Grab full path of Last accessed file
 
@@ -543,14 +544,16 @@ find / -printf "%A@ %p \n" 2>/dev/null | tail -n 1  # Grab full path of Last acc
 -exec works likes this : 
 # ls -l file1
 # ls -l file2
-xargs works like this :
+xargs works like this :	
 # ls -l file1 file2
 
 find . -name "*.pdf" -print0 | xargs -0 ls
 ```
+
 ### Options
 - used to control the SCOPE of the find search
 - -maxdepth<lvl_number> = levels are non-negtaive maxdepth = do kolko pod direktorie da ide nadole
+- -maxdepth 0 means only apply the tests and actions to the starting-points themselves
 - mindepth<lvl_number> = kolko minimum pod direktorie da ima toj shto trazimo 
 *(prefered to be in front of the options )*
 ```bash
@@ -563,6 +566,13 @@ find / -maxdepth 2 -type f -name "dariO" # Will look in subdirectories too
 - mount = not to traverse mounted directories on other systems
 - prune = if file is directory don't descend into it 
 
+### Compressing files 
+- c = compress, x = extract
+```bash
+tar -cvf "archivename.tgz" dir
+tar -zcvf "filename.gz" filename
+tar -xvf "archivename" -C dest_name
+```
 
 ## Text manipulation 📝
 
@@ -636,8 +646,17 @@ egrep ".{3}\.zip" # Match 3 characters after that .zip extension
 - by default if no file is give, recursively searches through whole directory
 - **Options:**
 	- -i ignore case (doesn't distinguish lowercase/uppercase)
-	- -v invert the match
-	- -c count matches
+	- -v invert the match (Match not matching lines)
+	```bash
+	echo "Dario e mnogo jak" | egrep "dario" # Will match the line
+	echo "Dario e mnogo jak" | egrep -v "dario" # Will not match the line 
+	```
+	- -c count matches (Number of lines that match the REGEX)
+	```bash
+	egrep "dario" /etc/passwd  # Prints only the number of matches
+	# Result : 
+	1 
+	```
 	- -l print name of file contains a match insead of the line
 	- -L inverse of l ( will print files that dont contain the match)
 	- -n on what line the match is located
@@ -654,6 +673,20 @@ egrep -A 4 "^Jane" data.txt | egrep "[a-zA-Z0-9\-\_\.]+@[a-zA-Z0-9\_]+.[a-zA-Z0-
 # Take every word from a line with grep
 egrep -o "\s*\w*\s*"
 ```
+
+- Find the,that,those,then insensitive using extended grep
+```bash
+egrep -iw '(the|that|those|then)'
+```
+
+### Date
+- prints to STDOUT current date format
+```bash
+date +"%F-%r"
+# %F = full date same as %Y-%m-%d
+# %r = locale's 12 hour clock time (eg.. 11:10:04 PM)
+```
+
 ### TR
 
 - translate or delete characters
@@ -680,7 +713,20 @@ tr -s " " text.txt
 sort file1.txt file2.txt > result_sorted_files.txt
 ```
 - **Options:**
-	- n sort based on numerical values
+	- n sort based on numerical values (If n is enabled the numbers will come before the text)
+	```bash
+	# Example
+	ps -o user,pid,rss,cmd
+	# Result :
+	USER 	PID 	RSS 	CMD
+	dario 	23 		23 		442
+	dario 	1 		255		bar
+	ps -o user,pid,rss cmd | sort -nrk 3
+	# Result :
+	dario 1 255 bar
+	dario 23 23 442
+	USER PID RSS CMD
+	```
 	- r reverse the sorting order ( By default it is Ascending order )
 	- k sort based on a key field
 	- t define the filed separator ( By default it is space or tabular space)
@@ -753,6 +799,7 @@ c
 	cut -d ':' -f 2 /etc/passwd # Will cut by : and take the 2nd column
 	cut -d ":" -f 2- /etc/passwd  # Will cut by :  and take from the 2nd column onwards
 	```
+
 ### Comm 
 - comm file1 file2
 	- compare two text files and displays the lines that are unique to each one and the lines they have in common
@@ -762,12 +809,40 @@ c
 	# -12 Means don't show the first and the second column 
 	comm -1 file1 file2 # Will show the unique lines of file2 and the common lines
 	```
+
+### Diff
+- **DIFF $FILE1 $FILE2** = if both files have same content no string is returned
+- is logically equal to comm -3 $FILE1 $FILE2
+```bash
+diff task NOTES
+# Result :
+> ovoj
+> ima u task
+< razlicno u Notes
+```
+
+```bash
+# Exercise with diff
+
+if [ -z "$(diff "$file1" "$file2")"]then;
+	echo "Files have the same content"
+fi
+```
+
 ### Wc (word count)
-- wc - print line, word, and byte counts for each file
+- wc - print line, word, and byte counts for each file and **filename next to it**
 - **-l**, --lines - print the newline counts
 - **-w**, --words - print the word counts
 - **-c**, --bytes - print the byte counts
 - **-m**, --chars - print the character counts
+```bash
+wc -l f1
+4 f1
+
+# Get number of lines 
+
+COUNT=$(wc -l f1 | cut -d " " -f 1).
+```
 
 ### Head 
 - print the first 10 lines of input
@@ -790,16 +865,30 @@ c
 - Reads/Processes only one line at a time .
 - **NF** is a variable that counts every word(separeted by whitespace default) in a every line.
 - **$NF** prints the last word in every line.
+- **$(NF-1)** get next to last word in line ( can be -2, -3 and so on )
 - $0 = references whole line, $1 =references first column , $n = get n column
+- Default input-field seprator is *SPACE*.
+- awk -FS '', to change the field separator
 - BEGIN = block executed at start
 - END = block executed at the end 
 - FILENAME = get current filename
 ```bash
-awk '{print FILENAME}' f1 
+awk '{print FILENAME}' f1   # f1 has 3 lines in it
 # Result
 f1 
 f1
 f1
+```
+
+- -v add a variable from bash
+```bash
+$NUMBER=69
+awk -v NUMBER=$NUMBER '{printf NUMBER}'
+```
+- arithmetics in awk (a+b) where a,b are variabls inside awk
+```bash
+awk '{ print ($NF+$(NF-1))}'
+awk -v a=2 -v b=3 '{print (a+b)}'
 ```
 
 ```bash
@@ -817,13 +906,6 @@ cat population.csv | egrep "2016," | awk -F "," '{print $NF,$0}' | sort -nrk 1 |
 - **NR** - prints number of row(line) you want from the text
 ```bash
 awk 'NR==1 END{print}'  # will print first row and END will print last row
-```
-
-- -v add a variable from bash
-
-```bash
-$NUMBER=69
-awk -v NUMBER=$NUMBER '{printf NUMBER}'
 ```
 
 #### Function 
@@ -867,12 +949,6 @@ else print $0,": A";
 }' inputs2
 ```
 
-- Find the,that,those,then insensitive using extended grep( When Pearl version doesn't work :( )
-
-```bash
-egrep -iw '(the|that|those|then)'
-```
-
 ### Sed
 - stream editor
 - Performs text editing on a stream of text
@@ -880,9 +956,21 @@ egrep -iw '(the|that|those|then)'
 - **Basic commands**
 ![commands](https://github.com/arsovskidario/Operating-Systems/blob/master/images/sed_editing_cmds.png?raw=true)
 - **s** = search and replace strings
+- **used for removing words in a LINE**
 ```bash
 sed "s/str1/str2/" file1 # Will replace only the first instance on every line
 sed "s/str1/str2/g" file1 # Will replace every instance of str1 on every line
+sed -r "s/^[0-9]*god.\s//" file1 # Will remove year from text
+
+# Remove word from text example
+# 1979 g. - ,,Trifun'' (sbornik)
+# 1979 g. - ,,Double star'' - Lyub
+# 1979 g. - ,,Alibi'' - Dimityr Peev
+# 1979 g. - ,,Zavrshvane ot zvezdite'' - Stanislav Lem
+# 1979 g. - ,,SReshta s rama'' - Artyr Klark
+
+cat file1 | sed -r "s/^[0-9]*\sg\.\s-\s//"
+
 ```
 - **addressing** = specifies which lines of the input stream will be edited
 - If no address is specified the editing is carried out on every line in the input stream
@@ -1049,8 +1137,9 @@ killall -KILL name # Will send signal for kill to all instances of the process w
 
 -  **Variables**
 - 
-
+- **write <user_id>** # Send msg to user on same system
 -  **Environment variables**
+- **who** =shows who is logged in the system 
 
 - variables that are created in the current shell and are accessible by all derived shells from the original shell.
 

@@ -1,3 +1,6 @@
+s45194:x::1255:502:Elizabet Mihaylova, Inf, k3:/home/Inf/s445194
+s45139:x:1261:502:Vasilena Peycheva:/home/Inf/s45139
+s45116:x:1235:502:Aleksandar Yavashev:/home/Inf/s45216
 root:x:0:0:root:/root:/bin/bash
 bin:x:1:1:bin:/bin:/sbin/nologin
 daemon:x:2:2:daemon:/sbin:/sbin/nologin
@@ -263,5 +266,5 @@ s61899:x:1213:504:Kamen Kanchev, SI, 2, 4:/home/SI/s61899:/bin/bash
 s61859:x:1214:504:Georgi Nikolov:/home/SI/s61859:/bin/bash
 s61909:x:1215:504:Ivan Ivanov:/home/SI/s61909:/bin/bash
 s71473:x:1216:504:Test Testov, SI, 2, 3:/home/SI/s71473:/bin/bash
-1234125125
-125125
+dario:x:1000:1000:Dario Arsovski,/home/SI/dario,,,:/home/dario:/bin/bash
+

@@ -1,0 +1,8 @@
+#!/bin/bash
+
+read -p "line" HEAD_LINE
+
+
+for (( i=0;i<=$HEAD_LINE;i++)); do
+	head -n $i /etc/passwd | tail -n 1
+done
