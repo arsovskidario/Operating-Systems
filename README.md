@@ -1409,7 +1409,7 @@ fi
 exit 1
 ```
 
-## While loop
+### While loop
 ```bash
 While read line; do
 ...
@@ -1428,7 +1428,7 @@ done < <(echo -e "$VAR")
 ```
  
 
-## C-Notes
+# C-Notes
 
 ### xxd
 - make a hex dump 
