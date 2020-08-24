@@ -1132,131 +1132,301 @@ kill -INT PID # Send interrupt signal to the process (Most of the time this kill
 killall -KILL name # Will send signal for kill to all instances of the process with the same name 
 ```
 
-**Scripting**
--
+# Shell Scripting
 
--  **Variables**
-- 
-- **write <user_id>** # Send msg to user on same system
--  **Environment variables**
-- **who** =shows who is logged in the system 
+- **The shell expands all qualifying chars(wildcards) on the command line before the command is carried out**
 
-- variables that are created in the current shell and are accessible by all derived shells from the original shell.
+- $((expression)) for math
 
-- you can override the inherited variables from parent
+- Brace expansion = For ranges
+```bash
+echo Number {1..5}
+### Result Number 1 Number 2 Number 3
+echo letter{A..Z}
+mkdir {2007..2009}-{01..12}
+```
+## Command Substitution 
+- allows you to use output of a command as an expansion
 
--  **printenv** shows all the environmental variables
+- echo $(ls)
 
--  **export** makes shell variable to an environmental variable.
+- echo $(sort darko.txt)
 
--  **export -n** demotes a environmental variable back to a shell variable.
 
--  **Shell variable**
+- file $(ls -d /usr/bin | grep zip)
 
-- variable only available in shell that it was created in.
 
--  **set** shows all shell variables.
-
--  **unset** unset a shell variable.
-
-- by convention variables should be name with UPPERCASE.
-
-- which <cmd> = shows directory of command
-
--  **Creating scripts**
-
--
-
--  **#!/bin/bash** -> use bash as the scripts command-line interpreter.
-
-- .sh - convient name for script
-
-- chmod +x <name>.sh set the script to be executable
-
--  **when you open a script from one shell it will have 2 shells running at the same time, one being the one that executes the code in the script**
-
--  **variables in the script wont be accesible to you unless you open the script using the special cmd *source***
-
--  **source <name>.sh** is a bash shell built-in command that executes the content of the file passed as argument, in the current shell.
-
-- this cmd allows you to use the variables in the script as local shell variables.
-
-- when using variables inside cmds make sure to use ${VAR} notation
-
--  **Test**
--
-
-- special command that is used for testing(comparing) data inside conditionals and loops;
-
-- -eq,-gt,-ge,-lt,-le
-
-- comparing strings with "string"
-
-- "string1" = "strin2" or test ["dario" = "dario"]
-
-  
-
--  **Parametars**
--
-
-- $@ get a list of all arguments passed
-
-  
-
--  **Get user input**
-
--
-
-- read VAR enables you to intake a variable from user input
-
-- read -n "Enter " var lets you prompt a text message infront
-
--  **Loop String**
-- 
+- **"$()" # suppresses whitespaces and everything except for $ \ `** 
+- **'$()' # supresses everything including $ \ '** 
 
 ```bash
+foo=
+[ $foo = 1 ];
+[ =1 ]; # = is a binary operation and it expects input on both sides 
+        # If no input on on side = ERROR : unary operator expected
 
-#C style
-
-foo=string
-
-for  (( i=0; i<${#foo}; i++ ));  do
-
-echo  "${foo:$i:1}"
-
-done
-
+[ "$foo" = 1 ]; # Solves the problem 
+# Is : ""=1 
 ```
 
-  
+### Best practice always  escape variables with " " ex. "$FOO" 
+- **" "**  don't permit word splitting and treats everything as as string
+ - Doesn't escape $, \ and `
+ - **escape special characters in " " with \\**
+```bash
+echo "I have    $50"
+RESULT :
+I have    50
+Solution : echo "I have \$50"
+```
+Other implementation:
+- if file has multiple spaces in it's name
+```bash
+ls -l two words.txt # Will treat this input as two files not one
+ls -l "two words.txt "  # Will treat the input as one file with the name two words.txt
+```
+###  Command substitution is allowed inside "" also arithmetic operations
+```bash
+echo " $(ls) $((2+3))"
+```
+### '  ' escapes all chars that means $,\  and shell substitution doesn't work
+```bash
+echo '$(ls)'
+# Result : $(ls)
+```
 
--  **${#foo} expands to the length of foo. ${foo:$i:1} expands to the substring starting at position $i of length 1.**
-
--  [Link to answer](https://stackoverflow.com/a/10552175/11054284)
-
--  **Using the‘#’ symbol to count the length of a string**
+## Portion a string
+- **${#parameters}** - Expands into the length of the string contained in braces
+- ${#@} - get number of positional parameters 
+ 
+- Get portion of string, offset is index where it will start, length the length of the new portioned string
+-  If offset is negative the portioning starts from the back of the string 
+- **${parameter:offset}**
+- **${parameter:offset:length}** 
 
 ```bash
+foo="Dario e mnogo jak"
+${VAR:$i:1} # Substring function (str,start_position,number_of_chars), here it gets all letters from a word 
+echo "${foo:5}"  # Result: e mnogo jak
+echo "${foo:6:1}" # Result : e 
 
-$ string="Learn Bash Programming with LinuxHint"
+# Portion from back
 
-$ echo ${#string} # Output: 37
-
+echo "${foo:-3:1}" # Result k 
 ```
 
--  **Convert arguments into string**
+## Arithmetic Evaluation 
+- **$((expression))**
+```bash
+echo $(( 5 * 2))
+echo $((5**2)) # Result : 25 
 
-- to avoid special characters not being used as a string in script
+#############################
+FOO=5
+((FOO+=25))
+echo $FOO # Result : 30
+```
 
-- str="'$*'" or str="'$@'"
+## Enviromental variabels
+- variables placed by the shell
+- **printenv** = prints enviromental variables
+- **set** = prints all enviromental variables + shell variable and functions
+- **Non login shells inherit the enviroment variables from their parents ( login shells) **
+-   **source <script_name>**  = bring env variables to current shell calling the source cmd
 
--  [Link to answer](https://unix.stackexchange.com/a/197794/402386)
+## Permissions 
+- scripts need to be readable so they can be executable
+700 Only owner can run 
+755 everyone can execute
 
-  
+## If statements
+```bash
+if [ ]; then
+elif [ ]; then
+else
+fi
+```
+-  If a list of cmds follows if, the last command in the list is evaluated
+```bash
+if true;false; then echo "Its true"; fi  
+# Wont enter the if block because false is executed last
+```
 
--  **RANDOM**
+## Test
+- return 0 exit status when expression is true 
+- returns 1 exit status when expression is false
+-  exit <status_number> = Used to exit with status number 
+Options : 
+	-e = Test if file exists
+	-d = Test if it is a directory
+	-f = Test if it is a regular file
+	-L = Test if file is a symbolic link 
+	-r = File exists and is readable
+	-w = File exists and is writable
+	-x = File exists and is executable
+	file1 -ef file2 = If file 1 has same inode as file2
+	file1 -nt file2 = File1 is newer than file2
+	file1 -ot file2 = File1 is older than file2
+```bash
+if [ -e foo.txt] && [ -e bar.txt]; then
+	echo "Both exist" 
+	if [ foo.txt -nt bar.txt ]; then
+		echo "Foo is newer" 
+	else
+		echo " Is older"
+	fi
+	exit 0 # Will terminate program with exit status 0 
+fi
 
-- $(( (RANDOM % b) + a ))
+if [[ "$INT" -ge "$MIN_VAL" && "$INT" -le "$MAX_VAL" ]]; then
+echo "$INT is within $MIN_VAL to $MAX_VAL."
+
+exit 1 
+```
+
+```bash
+[ -d temp ] || exit 1 # If the temp is a directory it will continue without exiting
+# If it is not a directory it will exit immediatly with status 1 
+[ -d temp ] || mkdir temp # If the directory temp doesn't exist create it 
+```
+- **Negate test evaluation using !**
+```bash
+if [[ ! ("$INT" -ge "$MIN_VAL" && "$INT" -le "$MAX_VAL") ]];
+if [[ ! -d $DIRECTORY ]];
+```
+### Test and Strings
+- Options : 
+	- string = tests if the string is not null
+	- if [ "dario" ]; then echo "Congrats not null" fi 
+	- -n string = len of string is greater than zero
+	- -z string = len of string is zero
+	- if [ -z "dario" ]; then echo "String is zero" fi
+	- string1 == string2  - string1 and string2 are equal 
+	- string1 = string2 - same as above but for POSIX compliance
+	- string1 != string2 - strings are not equal
+	- string1 > string2 - must be escaped with " or \ 
+	- string2 < string2 
+	- [[ string =~ REGEX ]]; # Special case of test used for REGEX matching strings( Must have double brackets)  
+	- INTEGER -le integer2 # Less or equal
+	- INTEGER -lt INTEGER2 # lesser than integer2
+	- INTEGER -eq INTEGER2 # integers are equal
+	- INTEGER -ne INTEGER2 # Integer1 is not equal to integer2 
+	- INTEGER -ge INTEGER2
+	- INTEGER -gt INTEGER2 # greater than integer2
+	- (()) # used for arithmetics on integers
+	- if(( INT < O )); then echo ..
+	- if (( (( INT%2 )) == 0 )); then echo "Even"
+
+```bash
+# Test if second arguments is a number
+if [[ $2 =~ ^[0-9]*$ ]]; then
+                echo "$2 is a number"
+        else
+                echo "Not a number"
+                exit 3
+fi
+
+# Find even number
+if [ $((INT%2)) -eq 0 ]; then echo "Even number" fi 
+# $(()) is the termianl for math operations $(($INT%2)) functions the same   
+```
+## Reading user input
+- **read VAR_NAME**
+```bash
+read VAR
+echo $VAR # WORKS
+READ VAR1 VAR2 VAR3 VAR4 # Can intake multiple variables 
+# If read receives fewer than expected number of variables it will return empty variables/ strings.
+read -p "Enter ur age" AGE
+REPLY #  Variable that holds all the values entered with the read command 
+read $darko
+```
+
+## Positional Parameters
+
+
+-  Get parametars provided from the shell, variables are named 0 through 9 
+- **$0** = Pathname to the file which is being executed 
+```bash
+#!/bin/bash
+echo $0
+
+## Execution in terminal
+$ ./posit-param
+# Result :
+/home/me/bin/posit-param
+```
+
+
+- user parametars start from $1
+- **$#** = shows thhe number of parametars 
+- **$@** =(all positional parameteres except $0 )  creates array of params and takes all of them with delimiter space  
+- **"$@"** =takes all the params that are enclosed by " "
+```bash 
+# "dario" "najjak chovek univerzum"
+# $@ 
+# $1 = dario
+# $2 = najjak
+# $3 = chovek
+# $4 = univerzum
+# "$@"
+# $1=dario
+# $2=najjak chovek univerzum
+# $3=
+# $4=
+```
+- **((MAX_COUNTER=MAX_COUNTER+1))**
+```bash
+```read -p "Enter file name : " FILE
+
+
+MAX_LEVEL=0
+
+if [ -e $FILE ]; then
+        RESULT=$(cat $FILE | egrep -o "[\{\}]" | xargs echo  | tr -s " ")
+
+        COUNT=0
+        for(( i=0;i<${#RESULT};i++ )); do
+
+             if [ "${RESULT:$i:1}" == "{" ]; then
+                     ((COUNT=COUNT+1))
+             fi
+
+             if [ "${RESULT:$i:1}" == "}" ]; then
+                     ((COUNT=COUNT-1))
+             fi
+
+             if [ ${COUNT} -gt ${MAX_LEVEL} ]; then
+                     MAX_LEVEL=$COUNT
+             fi
+
+        done
+
+        echo "Max level of nesting is : $MAX_LEVEL" 
+        exit 0
+fi
+
+exit 1
+```
+
+## While loop
+```bash
+While read line; do
+...
+done < <( echo -e "$Name" )
+# echo -e = Acknowledges \n \t \\ as meaningful characters
+# echo = Doenst acknowledge chars above as meaningful
+
+# Read words
+while read line;
+do
+	for i in $line
+	do
+		echo $i
+	done
+done < <(echo -e "$VAR")
+```
+
 
   
 

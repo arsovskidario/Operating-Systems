@@ -1,1 +1,0 @@
-cat philip-j-fry.txt | egrep -v "[a-w]" | egrep "[02468]" | echo "Result is : $(wc -l)"
