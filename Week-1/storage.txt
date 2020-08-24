@@ -1,5 +1,0 @@
-find dest -ctime -60 # change time 60min
-  	   -atime # access time
-	   -mtime # modified time
-ln src dest # src file you want to link to dest = destination of shortcut
-

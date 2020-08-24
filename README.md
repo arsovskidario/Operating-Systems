@@ -1426,12 +1426,6 @@ do
 	done
 done < <(echo -e "$VAR")
 ```
-
-
-  
-
-# C Linux
-
  
 
 ## C-Notes
