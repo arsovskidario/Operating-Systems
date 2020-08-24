@@ -1132,7 +1132,7 @@ kill -INT PID # Send interrupt signal to the process (Most of the time this kill
 killall -KILL name # Will send signal for kill to all instances of the process with the same name 
 ```
 
-# Shell Scripting
+# Shell Scripting 🐚
 
 - **The shell expands all qualifying chars(wildcards) on the command line before the command is carried out**
 
@@ -1432,524 +1432,547 @@ done < <(echo -e "$VAR")
 
 # C Linux
 
-  
+ 
 
-**Open**
-- 
+## C-Notes
 
-- Opens a file based on the given path and returns a file descriptor or -1 if it failed.
+### xxd
+- make a hex dump 
+- by default prints output to STDOUT
+- xxd -r  = rтетeverse the dump into binary file 
+- xxd -r dump result
+```bash
+xxd dump
+# Result :
+00000000: 46be 6444 31c0 290b 64e5 8635 edbf 9c2d  F.dD1.).d..5...-
+00000010: d7a6 1fb5 c214 0701 25a5 488c 20d4 a2af  ........%.H. ...
+00000020: c43c a8bb 5a83 eb7c 0b51 2045 41a5 4941  .<..Z..|.Q EA.IA
 
-- int open(const char *pathname, int flags);
+# Every row can have up to 16bytes 
+0000020 = Will start after character at position 0x20 of file ( after the 32 character)
+46be 
+46 = 1 byte = hex representation of F
+be = 1 byte = hex representation of .
+```
 
-- int open(const char *pathname, int flags, mode_t mode);
+####  Little endian
+- Ox1234
+- 34 12
+```c
+u_int16_t foo= 0x1234;
+u_int8_t bar=foo; ( ke ga zeme 34) 
 
--  *flags* must be specified (O_RDONLY, O_WRONLY, O_RDWR)
+u_int16_t = 2^16 = 65355
+u_int32_t = 2^32 = 4bil
+printf("%d %d",foo,bar); 
+# Result is :
+1234 12 = Big Endian 
+```
 
-- O_CREAT (create a file if it doesn't exist)
 
-- O_TRUNC (overwrites the file that will be opened)
+### getuid() = get user id 
 
-- O_APPEND (when write() lseek() is position to EOF and you write to EOF)
+uid_t me = getuid();
 
--  *mode* is specified when using O_CREAT flag for creating a new file
-
-- S_IRWXU 00700 user (file owner) has read, write, and execute permission
-
-- S_IRUSR 00400 user has read permission
-
-- S_IWUSR 00200 user has write permission
-
-  
-
-**Read**
-- 
-
-- ssize_t read(int fd, void *buf, size_t count);
-
-- read() attempts to read up to *count* bytes from *file descriptor* fd *into the buffer* starting at buf.
-
-  
-
-- read starts from the file offset made by lseek
-
-- if file seek is at or past EOF no bytes are read and 0 is returned
-
-- on success read the number of bytes read is returned and file is seeked by that ammount
-
-- can read even smaller than the *count* given (if the file has less bytes to read)
-
-  
-
-**Write**
-- 
-
-- ssize_t write(int fd, const void *buf, size_t count);
-
-- write() writes up to *count* bytes *from the buffer** starting at buf to the file referred to by the *file descriptor* fd.
-
-- The number of bytes written may be less than count if, for example, there is insufficient space on the underlying physical medium
-
-- writing takes place where the last lseek was placed if O_APPEND it will always be the EOF.
-
-- can read even smaller than the *count* given (if the file has less bytes space to write)
-
-- return number of bytes that were written
-
-  
-
-**Close**
-- 
-
-- int close(int fd);
-
-- closes a file descriptor so it doesn't refer to a file and can be reused
-
-- the lseek is reset on the file
-
-- return 0 on success and -1 on failure to close
-
-  
-
-**errno**
-- 
-
-- variable keeps the last function return value
-
-  
-
-**lseek**
-- 
-
-- lseek(int fd, off_t offset, int whence);
-
-- repositions *file descriptor* to the *offset* according to *whence*
-
-- whence :
-
-- SEEK_SET - sets fd to offset bytes
-
-- SEEK_CUR - current fd offset location plus offset in bytes
-
-- SEEK_END - end of file offset plus offset bytes
-
-  
-
-**stat**
-- 
-
-- int stat(const char *pathname, struct stat *statbuf); -> full path name
-
-- int fstat(int fd, struct stat *statbuf); -> file descriptor
-
-- int lstat(const char *pathname, struct stat *statbuf); -> symbolic link is pathname and return info about the link itself
-
-  
-
-- stat return information about file in the buffer *statbuf* (object of struct stat)
+### malloc()
+- **return void ptr by default**
+- has to be casted so it can be used
 
 ```c
+# Syntax:
+ ptr = (cast-type*) malloc(byte-size)  # cast-type is so it can be casted to the type you want to use instead of void
+int* ptr = (int*) malloc(100*sizeof(int)) # int(4bytes) size of array = 4*100 = 400
+free(ptr) # Free the memory block
+```
+- **Returns null if the allocation was *unsuccesful***
+- **Always test if pointers is different then NULL before using array**
 
-struct stat {
 
-dev_t st_dev; /* ID of device containing file */
+## exit(int status)
+- terminates calling process immediately and closes any open file descriptors belonging to the process
+- children of the terminated process immediately inherit PPID 1 (init)
+- exit(0) on success
+- exit(1) on failure
 
-ino_t st_ino; /* Inode number */
+## open
+- return the lowest file descriptor available  int >=0
+- if return == -1, open has failed
+- **By default the file is opened with the cursor positioned at the start. Writing overwrites the bytes at the beginning of the file.**
 
-mode_t st_mode; /* File type and mode */
+```c
+int open(const char* pathname, int flag)
+```
+- Flags :
+	- must include one of the following access mode flags
+	- O_RDONLY read only
+	- O_WRONLY write only
+	- O_RDWR read write
+	- Optional :
+	- O_CREAT if file does not exist, it will be created  by open() owner is the user id of the process, perm are default by the processes umask
+	- O_APPEND when this option is selected lseek() is placed at the end of the file before using write() on the file 
+	- O_TRUNC if the file can be read and is a regular file it will be deleted and used with nothing in it (length=0)
 
-nlink_t st_nlink; /* Number of hard links */
+- Options (after using O_CREAT):
+	- S_IRWXU, 0700, rwx permission
+	- S_IRUSR, 0400 read permissino
+	- S_IWUSR, 0200 write permission
+```c
+fd3=open(argv[1], O_CREAT | O_RDWR, SIRUSR | S_IWUSR);
+```
 
-uid_t st_uid; /* User ID of owner */
+## close
+- closes a file descriptor, and that fd can be reused again.
+- return 0 on success
+- return -1 on failure and errno is set appropriately
+```bash
+int close(int fd);
+```
 
-gid_t st_gid; /* Group ID of owner */
+## read
 
-dev_t st_rdev; /* Device ID (if special file) */
+```c
+ssize_t read(int fd, void* buf, size_t count)
+```
+- read starts from the **lseek() offset**
+- reads up to **count** bytes from file descriptor **fd** into the buffer **buff**
+- *return value can be =0 count if there are no more bytes to be read from the file*
+- returns the number of bytes read, if return is 0 means EOF
+- **after successful read the lseek() offset is appropriately to count ammount**
+- returns -1 on failure and **errno** is set appropriately
 
-off_t st_size; /* Total size, in bytes */
+## write
+```c
+size_t write(int fd, const void* buf,size_t count);
+```
+- write starts where the last lseek() was placed, if O_APPEND flag is set that it always will be EOF
+- writes up to **count** bytes from the **buffer** into the file specified by the **fd**
+- lseek() offset is incremented by **count**
+- returns number of bytes writen to file, if it is less than count means there is no more space to be writen into ( partial writes)
+- **returns -1 if the operation has failed and is applied to errno**
 
-blksize_t st_blksize; /* Block size for filesystem I/O */
 
-blkcnt_t st_blocks; /* Number of 512B blocks allocated */
+## lseek 
+```c
+off_t lseek(int fd, off_t offset, int whence);
+```
+- **offset** how many blocks should it be move
+- whence can be :
+	- SEEK_SET = set to exactly **offset** position
+	- SEEK_CUR = current position + **offset** count
+	- SEEK_END = EOF + **offset** count
+```c
+	lseek(fd,0,SEEK_SET) // Beginning of file 
+	lseek(fd,100,SEEK_SET) // Start from 100 
+	lseek(fd,0,SEEK_END) // Start from EOF (after last byte in file)
+	lseek(fd,-10,SEEK_CUR) // Seek 10 positions back from your current position
+```
+- **returns **offset** count on successs**
+- **return -1 if the operation has failed**
 
-  
+## errno
+- variable that stores the last error return status of a function  that has failed
 
-/* Since Linux 2.6, the kernel supports nanosecond
+## err 
+- terminates the program with custom error code and message 
+- display message on STDERR 
+- err verr warn - exit with the value of the arg eval
+- **errx,warnx** dont affect the errno vaiable
 
-precision for the following timestamp fields.
+- **err = the string associated with the current value of errno**
+- **errx = doesn't care about the errno**
 
-For the details before Linux 2.6, see NOTES. */
+```c
+// Err and errx exit with status  eval
+void err(int eval, const char *fmt, ...);
+err(1, "%s", file_name);
+// Err when some functions didn't work / System not user fault
+void errx(int eval, const char *fmt, ...);
+// Errx when user broke the program
 
-  
 
-struct timespec st_atim; /* Time of last access */
+// Used for warning user with messages
+void warn(const char *fmt, ...);
+void warnx(const char *fmt, ...);
+```
 
-struct timespec st_mtim; /* Time of last modification */
+- errx used when user has failed in some logic 
+```c
+  if ( name != "root") {
+	close(fd);
+	errx(-1,"You didn't enter the correct name");
+ }
+```
 
-struct timespec st_ctim; /* Time of last status change */
+- err is used when the system failed on some operation
+```c
+if ( open(fd,O_RDONLY) == -1 )
+{
+	err(-1,"Failed to open file %s!",fd);
+	# char* ERROR_MESSAGE="Failed to open file!"
+	# err(-1,"%s\",ERROR_MESSAGE);
+}
+```
 
-  
 
-#define st_atime st_atim.tv_sec /* Backward compatibility */
+```c
+// Test this to see difference
 
-#define st_mtime st_mtim.tv_sec
+// f3 doesn't exist on the system
+int fd1 = open("f3",O_APPEND | O_RDWR);
 
-#define st_ctime st_ctim.tv_sec
+        if ( fd1 == -1 )
+        {
+                //char c;
+                //read(fd1,&c,1);
+                err(-2,"Failed to open file ");
+		//errx(-2,"Failed to open file ");
+        }
 
-};
+// Result : 
+// Faiiled to oepn file : No such file or directory
+// the part after : is promped thanks to the errno
 
-  
+// the errx part won't =print the No such file string..
 
 ```
 
-- returns 0 if stat is succesful, and -1 if it failed
+
+## printf 
+- %d = decimal
+- %x = hex value
+
+## stat
+- successs =0
+- fail =-1
+- st_size;  
 
 ```c
+struct stat st;
+// fstat(fd,&st);
 
-// Check if stat was succesfull
+int fd1 = open(argv[1], O_RDONLY);
 
-char* fd; // assume it is opened
-
-struct stat file;
-
-if ( stat(fd,&file) == -1 ){
-
-close(fd);
-
-errx(1,"Couldn't stat file ");
-
-}
-
+fstat(fd1,&st);
 ```
-
-  
-
-**Void array**
-- 
-
-- you can appoint any type to it and then cast it back to that type
-
 ```c
 
-// Casting void array elements to u_int32_t
+#include<stdlib.h>
+#include<stdio.h>
+#include<err.h>
+#include<errno.h>
+#include<unistd.h>
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <fcntl.h>
+#include <sys/types.h>
+#include <sys/wait.h>
 
-int  cmp(const void* a, const void* b){
 
-u_int32_t x = *((u_int32_t*)a);
+// File check for size
+        struct stat st;
 
-u_int32_t y = *((u_int32_t*)b);
+        if(fstat(fd,&st) == -1)
+        {
+                close(fd);
+                err(-4,"FAILED TO STAT");
+        }
 
-  
+        if( st.st_size == 0 )
+        {
+                close(fd);
+                errx(-7,"File is empty");
+        }
 
-if(x>y)
-
-return 1;
-
-else if (x<y)
-
-return -1;
-
-  
-
-return 0;
-
-}
-
-  
-
-int  main(){
-
-int elements =5;
-
-void* x = malloc(elements * sizeof(u_int32_t));
-
-qsort(x,elements,sizeof(u_int32_t),cmp);
-
-}
-
+        if( (st.st_size % sizeof(u_int16_t) ) !=0 )
+        {
+                close(fd);
+                errx(-6,"Does not contain only u_int16_t numbers");
+        }
 ```
+
+## Parametar logic in C
+```c
+int main(int argc, char* argv[])`
+argc by default is 1 because of file name ./main.c
+argv[0] = ./main.c  // File name 
+argv[1] = param  // Parametar next to ./main 
+
+
+// Example
+
+./main 
+argc=1
+argv[0] = ./main
+
+./main darko magarko 
+
+argc=3
+argv[0] =./main
+argv[1] = darko
+argv[2] = magarko
+
+
+\n = newline
+after newline count word
+\t = tab
+' ' = space
+```
+
+## strcmp
+```c
+int strcmp(const char* s1, const char *s2);
+```
+if return value = 0, s1 and s2 full match
+if return vaue  > 0, s1 longer than s2
+if return value < 0, s2 longer than s2
+
+#qsort function
+
+```c
+// Ascending
+int cmp(const void* a, const void* b)
+{
+	return ( *(uint32_t)*a) - *(uint32_t*)b ); // cast to appropriate type and dereference value
+}
+
+// Descending
+
+int cmp (const void* a, const void* b )
+{
+        uint8_t x = *((uint8_t*)a);
+        uint8_t y = *((uint8_t*)b);
+        if ( x  > y) {
+                return -1;
+        }
+        else if ( x <y )
+        {
+                return 1;
+        }
+
+        return 0;
+}
+```
+
 
 ## Processes
 
-  
-
-**Execl**
-- 
-
-- int execl(const char *path, const char *arg0, ... /*, (char *)0 */);
-
-- path = path to command/executable , arg0 = executable name, arg[1]..= parameters of executable, NULL = terminate list of arguments (arg[1],arg[2]..etc)
-- *(char *)NULL* list of arguments must be terminated by it.
-- **execl replaces the current process image with a new process image.**
-- replaces the curent runnig program with a new one.  (basically the pice of code that is left is overriden)
-
-- process iamge = executable program stored on the disk.
-
-- return -1 on failure
-
-- execl takes full path to executable
-
-- int execlp(const char *file, const char *arg, ... /* (char *) NULL */);
-
-- execlp takes name of command and searches $PATH for it.
-
-
-- **[Execl vs Fork](https://stackoverflow.com/a/4205020/11054284)**
-
+### Execl
+- replaces the current process with a new process 
+- **returs -1 if error occured**
 ```c
-    // Basically execl opens a different process and executes it to the full degree
-    // if it can't execute a cmd / doesnt enter a new process  -1 is returned
-
-    if ( excel("ls","ls","-l") == -1) {
-            err(1,"Couldn't execute cmd !");
-    }
-
-    printf("Print me!"); // Wont be printed because the current process is swaped with the ls process image 
-    // ne se navagja vishe u ovj proces nego u swaped process e
-
-    int childPid;
-    int forkId= fork();
-    if (forkId == 0){
-        wait(NULL); // wait for child to finish
-    }
-    else {
-        
-         childPid = getpid();
-         if ( excel("ls","ls","-l") == -1) {
-            err(1,"Couldn't execute cmd !");
-    }
-
-    printf("Command was executed by %d",childPid); // Wont work
-    // Because the child doesn't use the parents childPid variable, but it's own copy...
-    // Output from printf is line buffered. Basically /n flushes the buffer or fflush() if you do it manually. 
-    }
-
-    Pro tip: 
-        // Use \n with fork processes because of buffer issues when flushing stdout 
-        printf("Print \n"); // will flush buffer and print to screen
-
-
-
-```
-
-  
-
-```c
-
+// Executes the command that is given by the full path
+int execl(const char *pathname, const char* arg, ..., (char  *) NULL */);
 execl("/bin/ls","ls","-la",(char*)NULL);
 
-  
-
+// Doesn't take in full path, only the command name
+// Searches through PATH variable for the command matching the name
+// The first command that will be found will be used 
+int execlp(const char *file, const char* arg, ..., (char  *) NULL */);
 execlp("ls","ls","-la",(char*)NULL);
-
 ```
-
-  
-
-**Fork**
-- 
-
--  *pid_t fork(void);*
-
-- create a new process by duplicating the *calling process*.
-
-- new proces = child, old process= parent
-
-- inherits nearly everything from the parent process, including parents open file descriptors.
-
-- the *child* and *parent* process work concurrently starting from the next line after the fork() function.
-
-- the *child* and *parent* process have the same priority.
-
-- when the *parent* process finishes before the *child* process, the prompt is returned for use but the *child* process keeps on runnig until it finishes.
-
-- when the *parent* process finishes before the *child* process, the child process PPID is set to 1 (init PID) because the parent has finished and its PID no longer exists.
-
--  *RETURN*: pid_t = 0 *for child*, pid_t >0 *for parent*, pid_t = -1 *for failure*
-
-  
+- **pathname** is the full path to the command you're trying to use
+- **arg** is the options that the command will intake. ( the first arg can be used to name the process)
+- **(char*) NULL** tells the command that we have stopped with the options
+-  **on failure returns -1 exit code**
 
 ```c
+// Takes the process image and executes it to the full degree
+// This means everything else in the current program will be ignored
 
-// Will print out father and son 1000 times in different order.
+execlp("ls","ListingContents","la",".",(char*)NULL);
 
-int n =  1000000;
+printf("If the execlp is successfull you wont see this message");
 
-  
-
-if (fork() > 0) {
-
-// In Parent
-
-for (int i = 0; i < n; i++) {
-
-printf("father\n");
-
+// Test
+if ( excelp("ls","ls","-l") == -1) {
+            err(1,"Couldn't execute cmd !");
 }
 
-} else {
-
-// In Child
-
-for (int i = 0; i < n; i++) {
-
-printf("son\n");
-
-}
-
-}
-
+printf("Print me"); // won't be printed
 ```
+-   
+- Always check WIFEXITED () in parent and WEXITSTATUS()
+- WIFEXITED() - nqma znachenie dali e terminiral s greshka ili bez
 
-  
-
-**Wait**
-- 
-
--  *pid_t wait(int *wstatus);*
-
-- makes the calling process(parent) wait for state changes in a child process in order to obtain information about the state change.
-
-- return PID of terminated child process on success and -1 on error.
-
-- status information also includes : normal/abnormal termination, termination cause, exit status.
-
-- WIFEXITED(status): child exited normally
-
-- WEXITSTATUS(status): return code when child exits
-
-- WIFSIGNALED(status): child exited because a signal was not caught
-
-- WTERMSIG(status): gives the number of the terminating signal
-
-- WIFSTOPPED(status): child is stopped
-
-- WSTOPSIG(status): gives the number of the stop signal
-
-  
+- **For the above mention to work always use execlvp() exclusivley in fork() childs, so you can be able to check the exit status of the execution of execlvp() in the parent process.**
 
 ```c
+int fd =open("f1",O_RDWR);
 
-int status;
+pid_t fid = fork();
 
-  
-
-if (fork ==0) {
-
-exit(0);
-
+if ( fid == 0) {
+    // Child 
+    execvp("ls","ls",(char*)NULL);
 }
-
-else{
-
-wait(&status);
-
-  
-
-if (WIFEXITED(stat)) {
-
-printf("Exit status: %d\n", WEXITSTATUS(stat));
-
-}
-
-}
-
-```
-
-  
-
-**getpid & getppid**
-- 
-
-- pid_t getpid(void);
-
-- pid_t getppid(void);
-
-- return PID and PPID of calling process.
-
-- function is always succesful.
-
-  
-
-**Pipes**
-- 
-
--  *int pipe(int pipefd[2]);*
-
-- creates a pipe by giving pipefd[0] and pipefd[1] random fd and connecting them
-
-- pipefd[0] = read end, pipefd[1] = write end
-
-- if you close a fd in the parent process, the fd is not closed in the child process (works like hard links).
-
-- Data writen to the **write end** of the pipe can be read by the **read end** of the pipe.
-
-- write >>>> read
-
-- the **write end data* is *buffered* until it is fully read by the read end.
-```c
-	
-Parent A Child B
-
-a[0] <<<<<<<<<<<< a[1] // output ide kym input 1 stdout 0 stdin
-
-a[1] >>>>>>>>>>>>> a[0]
-
-  
-
-// Close used pipe sides
-
-  
-
-// Child
-
-close(a[1]);
-
-read(a[0],...); // will wait for read from parent
-
-  
 
 // Parent
 
-close(a[0]);
+int status;
+wait(&status);
 
-write(a[1],...);
+if(WIFEXITED(status) && WEXITSTATUS(status) == 0){
+    printf("Command has executed successfully")
+}
+```
 
-```  
 
--  **After writing to pipe always close it in order to avoid a deadlock**
-
-  
-
-- Example
-
+### fork()
 ```c
+pid_t fork(void); // doesn't intake parametars
+```
+- creates a new process by duplicating the calling process
+- calling process = parent, new process = child
+- pid,ppid
+- parent and child run in separate memory spaces.
+- parent and child work **concurently** starting from the line after the fork()
+- parent and child have the same priority in execution
+- child inherits copies of the parent's set of open file descriptors.
+- **lseek() pointer of file descriptors are inherited by the child and can be moved by the child affecting the lseek() in the parent**
 
-//Child
+### канала е отворен докато не се затвори навсякъде ( all fd must be closed )
 
-close(a[1]); //unused pipe side
+### when a child is forked it inherits a *copy* of the file descriptors. So closing the descriptor in the child will close it for the child, but not the parent,and vice versa
+### The channel tho stays the same even in the child
+```c
+#include<err.h>
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <fcntl.h>
 
-read(a[0],ch,1); // will read until parent has sent signal that it has finished writing
+int main( )
+{
 
-close(a[0]);
+        int fd = open("f1",O_RDWR);
 
-  
+        int pid=fork();
 
-//Parent
+        if ( pid == -1 )
+        {
+                err(1,"error");
+        }
 
-close(a[0]); //unused pipe-side
+        if( pid == 0 ) {
+                //Child
+                write(fd,"dariosrce",9);
+                close(fd);
+                exit(0);
+        }
 
-write(a[1],str,sizeof(str));
+        wait(NULL);
 
-//close(a[1]); if you dont close the stdout it will create a deadlock
-
-  
+        lseek(fd,0,SEEK_SET); // Reset lseek() that was changed in the child
+        char c;
+        while( read(fd,&c,sizeof(c)) >0 )
+        {
+                write(1,&c,sizeof(c));
+        }
+        close(fd); // Channel is closed because all instances of the fd are gone
+        exit(0);
+}
 
 ```
 
-  
+- **Return value for child is 0, value >0 is for parent, and -1 is failure and is reported in parent because child process wasn't created.**
 
-**DUP**
-- 
+- basically the parent receives PID of child in the return
+- when the parent process finishes before the child process, the prompt is returned for use but the child process keeps on runnig until it finishes.
+- when the parent process finishes before the child process, the child process PPID is set to 1 (init PID) because the parent has finished and its PID no longer exists.
+
+### wait()
+- **check task 13 in processes**
+- will wait for the first child process that terminates
+- parent process waits for child process to change state ( to terminate, to be stopped by a signal or resumed by a signal)
+- wait() only waits for the child process to **terminate**
+- wait(NULL) if you are not interested in the status and you just want to wait for the child to be terminated
+```c
+pid_t wait(int* wstatus);
+pid_t waitpid(pid_t pid, int* wstatus,int options);
+```
+- **returns pid of child if on successful termination and -1 on error**
+
+- make thread wait for atleast one child process to finish execution
+- -1     meaning wait for any child process
+- **waitpid(-1, &wstatus, 0);**
+
+- status information :
+	- WIFEXITED(status) : child exited normally
+	- WEXITSTATUS(status): return code when child exits
+	- WIFSIGNALED(status) : child exited because of a signal
+	- WTERMSIG(status) : gives the number of the terminating signal
+	- WIFSTOPPED(status) : child is stopped
+	- WSTOPSIG(status): gives the number of the stop signal
+```c
+int status;
+
+if (fork() == 0){
+	execlp("sleep","sleep","60",(char*)NULL);
+}
+else{
+	wait(&status);
+
+	if( WIFEXITED(status)) {
+		prnitf("exit status of child %d\n",WEXITSTATUS(status));
+	}
+}
+
+```
+
+### getpid()
+- return the PID of the calling process
+```c
+pid_t gepid(void); // doesn't intake any parametars
+```
+
+### getppid()
+- returns the PPID of the calling process 
+- either returns the PID of the parent that has created the current process via fork() or if the parent has terminated it will return 1 ( PID of init)
+```c
+pid_t getppid(void); // doesn't intake any parametars
+```
+
+- getpid() and getppid() are always successful
+
+
+## Pipes
+- create communication channels between processes, that transfer data without writing/using the disk.
+```c
+int pipe(int pipefd[2]);
+```
+- pipefd[0] = read end, pipefd[1] = write end
+- If a process attempts to read from an empty  pipe,  then  read(2) will block until data is available. If a process attempts to write to a full pipe (see below), then write(2) blocks until sufficient data has been read from the pipe to allow the write to complete. 
+- ako se zatvori close(fd[1]) ; tg i fd[0] ke prestane da chita i da ochekue input
+- ako ne se zatvori STIDN(fd[1]) na pipe tg tj shto chita ot fd[0] nema da prestane da chita i ke mozhe da se sluchi deadlock
+
+- If all file descriptors referring to the write end of a pipe have been  closed,  then  an attempt to read(2) from the pipe will see end-of-file (read(2) will return 0). ( Example: close(fd[1]) )
+
+- **returns -1 on error**
+```c
+int fd[2];
+
+pipe(fd);
+if (fork () == 0 ) {
+	close(fd[1]);
+	char c;
+   	while(read(fd[0],&c,sizeof(c)) > 0 ){
+	  	write(1,&c,sizeof(c)); // write to STDOUT 
+	}
+	close(fd[0]);
+	exit(0);
+}
+
+// Parent
+
+close(fd[0]);
+write(fd[1],"dario",5);
+
+// Reader will see EOF with close(fd[1]) and stop reading from pipe
+close(fd[1]); // will tell the child than there is nothing more to be read from the pipe 
+
+wait(NULL); // will wait for child process to finish reading and then exit with prompt returned
+```
+
+### DUP
 
 -  *int dup(int oldfd);*
 
@@ -1960,39 +1983,45 @@ write(a[1],str,sizeof(str));
   
 
 ```c
-
 // 0 1 2
-
 int f = open ....
-
-  
-
 // 0 1 2 3
-
 close(1); // close stdout
 
-  
-
 // 0 x 2 3
-
 dup(f);
 
-  
-
 // 0 1 2 3
-
 // 1==3
-
 printf(); // will write in f (fd=3) not on stdout
-
-  
-
 dup2(f,1); // if the fd is already in use it will silently close it
-
 // and will use it as the new file descriptor.
-
 // here f is equl to stdout
+```
 
+## FIFO
+- opening an end of a FIFO for r/w is blocked until another the other end is opened by another process
+```c
+int mkfifo(const char* pathname, mode_t mode);
+```
+- **returns -1 on failure**
+
+## Compress
+tar cJf <archive>
+
+## Extract
+
+tar xf <archive>
+
+## strchr(set,char)
+
+### p - pos = index of array element
+
+```c
+uint32_t size= (st.st_size /sizeof(uint32_t))/2;
+uint32_t* fhalf=(uint32_t*) malloc(half);
+
+if( read(fd,fhalf,half) != half)
 ```
   
 
